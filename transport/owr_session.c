@@ -51,11 +51,15 @@
 #include <string.h>
 
 
+#ifdef __ANDROID__
+#error android defined
 #include <assert.h>
 #include <dlfcn.h>
 #include <jni.h>
 #include <stdlib.h>
-
+#else
+#error android not defined
+#endif
 
 GST_DEBUG_CATEGORY_EXTERN(_owrsession_debug);
 #define GST_CAT_DEFAULT _owrsession_debug
