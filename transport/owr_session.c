@@ -765,6 +765,53 @@ static void on_java_detach(JavaVM *jvm)
     pthread_setspecific(detach_key, NULL);
 }
 
+static JavaVM *get_java_vm(void)
+{
+    JNI_GetCreatedJavaVMs get_created_java_vms;
+    gpointer handle = NULL;
+    static JavaVM *jvm = NULL;
+    const gchar *error_string;
+    jsize num_jvms = 0;
+    guint lib_index;
+    gint err;
+
+    for (lib_index = 0; !jvm && lib_index < G_N_ELEMENTS(android_runtime_libs); lib_index++) {
+        dlerror();
+        handle = dlopen(android_runtime_libs[lib_index], RTLD_LOCAL | RTLD_LAZY);
+
+        if (!handle) {
+            g_debug("failed to load %s: %s", android_runtime_libs[lib_index], dlerror());
+            continue;
+        }
+
+        g_debug("Android runtime loaded from %s", android_runtime_libs[lib_index]);
+
+        dlerror();
+        *(void **) (&get_created_java_vms) = dlsym(handle, "JNI_GetCreatedJavaVMs");
+        error_string = dlerror();
+
+        if (!error_string) {
+            get_created_java_vms(&jvm, 1, &num_jvms);
+
+            if (num_jvms < 1)
+                g_debug("get_created_java_vms returned %d jvms", num_jvms);
+            else
+                g_debug("found existing jvm");
+        } else
+            g_warning("dlsym(\"JNI_GetCreatedJavaVMs\") failed: %s", error_string);
+
+        err = dlclose(handle);
+        if (err)
+            g_warning("dlclose() of android runtime handle failed");
+    }
+
+    if (!jvm)
+        g_error("Failed to get jvm");
+
+    return jvm;
+}
+
+
 static JNIEnv* get_jni_env_from_jvm(JavaVM *jvm)
 {
     JNIEnv *env = NULL;
