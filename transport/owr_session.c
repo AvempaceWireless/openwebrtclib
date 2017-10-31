@@ -63,7 +63,7 @@
 #define ANDROID_RUNTIME_DALVIK_LIB "libdvm.so"
 #define ANDROID_RUNTIME_ART_LIB "libart.so"
 
-static pthread_key_t detach_key = 0;
+
 typedef jint (*JNI_GetCreatedJavaVMs)(JavaVM **vmBuf, jsize bufLen, jsize *nVMs);
 
 static const char *const android_runtime_libs[] = {
@@ -143,6 +143,11 @@ Global Variables Added to send String Msg to android
 #ifdef __ANDROID__
 static jmethodID midStr;
 static char * sigStr = "(Ljava/lang/String;ILjava/lang/String;)V";
+static pthread_key_t detach_key = 0;
+jclass javaClassRef;
+JNIEnv *envAndroid;
+static int once = 1;
+
 #endif
 
 GType owr_ice_state_get_type(void)
@@ -931,10 +936,19 @@ void _owr_session_emit_ice_state_changed(OwrSession *session, guint session_id,
 
 
 // ABDELHAMID : Init - One time to initialize the method id, (use an init() function)
-    JNIEnv *env = get_jni_env();
-    midStr = (*env)->GetMethodID(env, class, "javaDefineString", sigStr);
+    
+    if(once)
+    {
+	*envAndroid = get_jni_env();
+	jclass dataClass = envAndroid->FindClass("com/ericsson/research/owr/sdk/SimpleStreamSet");
+    	javaClassRef = (jclass) envAndroid->NewGlobalRef(dataClass);
+	midStr = (*envAndroid)->GetMethodID(envAndroid, javaClassRef, "javaDefineString", sigStr);
+	once = 0;
+    }
+
+    
 		
-    javaDefineString(env, o, "ICE_FAILED", 0, "AVEMPACE ICE failed to establish a connection");
+    javaDefineString(envAndroid, o, "ICE_FAILED", 0, "AVEMPACE ICE failed to establish a connection");
 		
 #endif
 			
