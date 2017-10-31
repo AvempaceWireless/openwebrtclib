@@ -63,6 +63,8 @@
 #define ANDROID_RUNTIME_DALVIK_LIB "libdvm.so"
 #define ANDROID_RUNTIME_ART_LIB "libart.so"
 
+static pthread_key_t detach_key = 0;
+
 #endif
 
 GST_DEBUG_CATEGORY_EXTERN(_owrsession_debug);
@@ -753,6 +755,15 @@ static OwrIceState owr_session_aggregate_ice_state(OwrIceState rtp_ice_state,
 
 // Abdelhamid Methods
 #ifdef __ANDROID__
+
+static void on_java_detach(JavaVM *jvm)
+{
+    g_return_if_fail(jvm);
+
+    g_debug("%s detached thread(%ld) from Java VM", __FUNCTION__, pthread_self());
+    (*jvm)->DetachCurrentThread(jvm);
+    pthread_setspecific(detach_key, NULL);
+}
 
 static JNIEnv* get_jni_env_from_jvm(JavaVM *jvm)
 {
