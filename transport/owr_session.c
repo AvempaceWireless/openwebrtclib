@@ -877,8 +877,7 @@ static JNIEnv* get_jni_env(void)
 static void init_jni(JavaVM *jvm)
 {
     JNIEnv *env;
-    int sdk_version;
-
+    
     env = get_jni_env_from_jvm(jvm);
 
 }
