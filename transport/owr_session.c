@@ -887,10 +887,11 @@ static JNIEnv* get_jni_env(void)
 }*/
 
 
-static void javaDefineString(JNIEnv * env, jobject o, char * name, jint index, char * value) 
+static void javaDefineString(JNIEnv * env, char * name, jint index, char * value) 
 {
   jstring string = (*env)->NewStringUTF(env, name);
-  (*env)->CallVoidMethod(env, o, midStr, string, index, (*env)->NewStringUTF(env, value));
+  jobject javaObjectRef = (*env)->NewObject(env, javaClassRef, midStr);
+  (*env)->CallVoidMethod(env, javaObjectRef, midStr, string, index, (*env)->NewStringUTF(env, value));
 }
 #endif
 
@@ -947,7 +948,7 @@ void _owr_session_emit_ice_state_changed(OwrSession *session, guint session_id,
   //  }
 
     	
-    javaDefineString(env, o, "ICE_FAILED", 0, "AVEMPACE ICE failed to establish a connection");
+    javaDefineString(env, "ICE_FAILED", 0, "AVEMPACE ICE failed to establish a connection");
 		
 #endif
 			
