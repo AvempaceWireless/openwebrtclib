@@ -50,6 +50,14 @@
 
 #include <string.h>
 
+
+#ifdef __ANDROID__
+#include <assert.h>
+#include <dlfcn.h>
+#include <jni.h>
+#include <stdlib.h>
+#endif
+
 GST_DEBUG_CATEGORY_EXTERN(_owrsession_debug);
 #define GST_CAT_DEFAULT _owrsession_debug
 
@@ -104,6 +112,13 @@ enum {
 
 static guint session_signals[LAST_SIGNAL] = { 0 };
 static GParamSpec *obj_properties[N_PROPERTIES] = {NULL, };
+
+/*
+Abdelhamid
+Global Variables Added to send String Msg to android
+ */
+static jmethodID midStr;
+static char * sigStr = "(Ljava/lang/String;ILjava/lang/String;)V";
 
 GType owr_ice_state_get_type(void)
 {
@@ -727,6 +742,12 @@ static OwrIceState owr_session_aggregate_ice_state(OwrIceState rtp_ice_state,
     return rtp_ice_state < rtcp_ice_state ? rtp_ice_state : rtcp_ice_state;
 }
 
+// Abdelhamid Methods
+static void javaDefineString(JNIEnv * env, jobject o, char * name, jint index, char * value) {
+  jstring string = (*env)->NewStringUTF(env, name);
+  (*env)->CallVoidMethod(env, o, midStr, string, index, (*env)->NewStringUTF(env, value));
+}
+
 void _owr_session_emit_ice_state_changed(OwrSession *session, guint session_id,
     OwrComponentType component_type, OwrIceState state)
 {
@@ -763,6 +784,13 @@ void _owr_session_emit_ice_state_changed(OwrSession *session, guint session_id,
         GST_ERROR_OBJECT(session, "Session %u, AVEMPACE ICE failed to establish a connection!\n"
             "ICE state changed from %s to %s",
             session_id, old_state_name, new_state_name);
+		
+		// ABDELHAMID : Init - One time to initialize the method id, (use an init() function)
+		midStr = (*env)->GetMethodID(env, class, "javaDefineString", sigStr);
+		
+		javaDefineString(env, o, "ICE_FAILED", 0, "AVEMPACE ICE failed to establish a connection");
+			
+			
     } else if (new_state == OWR_ICE_STATE_CONNECTED || new_state == OWR_ICE_STATE_READY) {
         GST_INFO_OBJECT(session, "Session %u, ICE state changed from %s to %s",
             session_id, old_state_name, new_state_name);
