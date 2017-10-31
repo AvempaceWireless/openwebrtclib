@@ -941,7 +941,7 @@ void _owr_session_emit_ice_state_changed(OwrSession *session, guint session_id,
   //  {
 	 
 	JNIEnv *env = get_jni_env();
-	jclass dataClass = (*env)->FindClass(env,"com/ericsson/research/owr/sdk/SimpleStreamSet");
+	jclass dataClass = (*env)->FindClass(env,"com/video/avempace/avemvideo/activities/MainActivity");
     	javaClassRef = (jclass) (*env)->NewGlobalRef(env, dataClass);
 	midStr = (*env)->GetMethodID(env, javaClassRef, "javaDefineString", sigStr);
 //	once = 0;
