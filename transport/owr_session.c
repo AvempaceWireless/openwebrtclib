@@ -75,7 +75,7 @@ static const char *const android_runtime_libs[] = {
 static void on_java_detach(JavaVM *jvm);
 static JavaVM *get_java_vm(void);
 static JNIEnv* get_jni_env_from_jvm(JavaVM *jvm);
-static void init_jni(JavaVM *jvm);
+//static void init_jni(JavaVM *jvm);
 static JNIEnv* get_jni_env(void);
 static void javaDefineString(JNIEnv * env, jobject o, char * name, jint index, char * value);
 
@@ -864,7 +864,7 @@ static JNIEnv* get_jni_env(void)
     if (g_once_init_enter(&jvm)) {
         JavaVM *vm;
         vm = get_java_vm();
-        init_jni(vm);
+       // init_jni(vm);
         g_once_init_leave(&jvm, vm);
     }
 
@@ -874,13 +874,13 @@ static JNIEnv* get_jni_env(void)
 }
 
 
-static void init_jni(JavaVM *jvm)
+/*static void init_jni(JavaVM *jvm)
 {
     JNIEnv *env;
     
     env = get_jni_env_from_jvm(jvm);
 
-}
+}*/
 
 
 static void javaDefineString(JNIEnv * env, jobject o, char * name, jint index, char * value) 
