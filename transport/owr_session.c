@@ -64,6 +64,7 @@
 #define ANDROID_RUNTIME_ART_LIB "libart.so"
 
 static pthread_key_t detach_key = 0;
+typedef jint (*JNI_GetCreatedJavaVMs)(JavaVM **vmBuf, jsize bufLen, jsize *nVMs);
 
 #endif
 
