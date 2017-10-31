@@ -77,7 +77,7 @@ static JavaVM *get_java_vm(void);
 static JNIEnv* get_jni_env_from_jvm(JavaVM *jvm);
 //static void init_jni(JavaVM *jvm);
 static JNIEnv* get_jni_env(void);
-static void javaDefineString(JNIEnv * env, jobject o, char * name, jint index, char * value);
+static void javaDefineString(JNIEnv * env, char * name, jint index, char * value);
 
 #endif
 
