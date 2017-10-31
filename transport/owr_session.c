@@ -145,8 +145,7 @@ static jmethodID midStr;
 static char * sigStr = "(Ljava/lang/String;ILjava/lang/String;)V";
 static pthread_key_t detach_key = 0;
 jclass javaClassRef;
-JNIEnv *envAndroid;
-static int once = 1;
+//static int once = 1;
 
 #endif
 
@@ -937,18 +936,18 @@ void _owr_session_emit_ice_state_changed(OwrSession *session, guint session_id,
 
 // ABDELHAMID : Init - One time to initialize the method id, (use an init() function)
     
-    if(once)
-    {
-	*envAndroid = get_jni_env();
-	jclass dataClass = envAndroid->FindClass("com/ericsson/research/owr/sdk/SimpleStreamSet");
-    	javaClassRef = (jclass) envAndroid->NewGlobalRef(dataClass);
-	midStr = (*envAndroid)->GetMethodID(envAndroid, javaClassRef, "javaDefineString", sigStr);
-	once = 0;
-    }
+  //  if(once)
+  //  {
+	 
+	JNIEnv *env = get_jni_env();
+	jclass dataClass = env->FindClass("com/ericsson/research/owr/sdk/SimpleStreamSet");
+    	javaClassRef = (jclass) env->NewGlobalRef(dataClass);
+	midStr = (*env)->GetMethodID(env, javaClassRef, "javaDefineString", sigStr);
+//	once = 0;
+  //  }
 
-    
-		
-    javaDefineString(envAndroid, o, "ICE_FAILED", 0, "AVEMPACE ICE failed to establish a connection");
+    	
+    javaDefineString(env, o, "ICE_FAILED", 0, "AVEMPACE ICE failed to establish a connection");
 		
 #endif
 			
