@@ -51,12 +51,11 @@
 #include <string.h>
 
 
-#ifdef __ANDROID__
 #include <assert.h>
 #include <dlfcn.h>
 #include <jni.h>
 #include <stdlib.h>
-#endif
+
 
 GST_DEBUG_CATEGORY_EXTERN(_owrsession_debug);
 #define GST_CAT_DEFAULT _owrsession_debug
