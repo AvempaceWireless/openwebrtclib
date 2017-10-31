@@ -746,6 +746,65 @@ static OwrIceState owr_session_aggregate_ice_state(OwrIceState rtp_ice_state,
 
 // Abdelhamid Methods
 #ifdef __ANDROID__
+
+static JNIEnv* get_jni_env_from_jvm(JavaVM *jvm)
+{
+    JNIEnv *env = NULL;
+    int err;
+
+    g_return_val_if_fail(jvm, NULL);
+
+    err = (*jvm)->GetEnv(jvm, (void**)&env, OWR_DEVICE_LIST_JNI_VERSION);
+
+    if (JNI_EDETACHED == err) {
+        err = (*jvm)->AttachCurrentThread(jvm, &env, NULL);
+
+        if (err) {
+            g_warning("android device list: failed to attach current thread");
+            return NULL;
+        }
+
+        g_debug("attached thread (%ld) to jvm", pthread_self());
+
+        if (pthread_key_create(&detach_key, (void (*)(void *)) on_java_detach))
+            g_warning("android device list: failed to set on_java_detach");
+
+        pthread_setspecific(detach_key, jvm);
+    } else if (JNI_OK != err)
+        g_warning("jvm->GetEnv() failed");
+
+    return env;
+}
+
+
+/* jvm needs to be fetched once, jni env needs to be fetched once per thread */
+static JNIEnv* get_jni_env(void)
+{
+    static JavaVM *jvm = NULL;
+
+    if (g_once_init_enter(&jvm)) {
+        JavaVM *vm;
+        vm = get_java_vm();
+        init_jni(vm);
+        g_once_init_leave(&jvm, vm);
+    }
+
+    g_return_val_if_fail(jvm, NULL);
+
+    return get_jni_env_from_jvm(jvm);
+}
+
+
+static void init_jni(JavaVM *jvm)
+{
+    JNIEnv *env;
+    int sdk_version;
+
+    env = get_jni_env_from_jvm(jvm);
+
+}
+
+
 static void javaDefineString(JNIEnv * env, jobject o, char * name, jint index, char * value) 
 {
   jstring string = (*env)->NewStringUTF(env, name);
@@ -791,10 +850,14 @@ void _owr_session_emit_ice_state_changed(OwrSession *session, guint session_id,
             session_id, old_state_name, new_state_name);
 
 #ifdef __ANDROID__
-		// ABDELHAMID : Init - One time to initialize the method id, (use an init() function)
-		midStr = (*env)->GetMethodID(env, class, "javaDefineString", sigStr);
+
+
+// ABDELHAMID : Init - One time to initialize the method id, (use an init() function)
+    JNIEnv *env = get_jni_env();
+    midStr = (*env)->GetMethodID(env, class, "javaDefineString", sigStr);
 		
-		javaDefineString(env, o, "ICE_FAILED", 0, "AVEMPACE ICE failed to establish a connection");
+    javaDefineString(env, o, "ICE_FAILED", 0, "AVEMPACE ICE failed to establish a connection");
+		
 #endif
 			
 			
