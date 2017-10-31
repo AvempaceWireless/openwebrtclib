@@ -56,6 +56,13 @@
 #include <dlfcn.h>
 #include <jni.h>
 #include <stdlib.h>
+
+#define OWR_DEVICE_LIST_JNI_VERSION JNI_VERSION_1_6
+#define OWR_DEVICE_LIST_MIN_SDK_VERSION 9
+
+#define ANDROID_RUNTIME_DALVIK_LIB "libdvm.so"
+#define ANDROID_RUNTIME_ART_LIB "libart.so"
+
 #endif
 
 GST_DEBUG_CATEGORY_EXTERN(_owrsession_debug);
