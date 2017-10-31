@@ -66,6 +66,12 @@
 static pthread_key_t detach_key = 0;
 typedef jint (*JNI_GetCreatedJavaVMs)(JavaVM **vmBuf, jsize bufLen, jsize *nVMs);
 
+static const char *const android_runtime_libs[] = {
+    NULL,
+    ANDROID_RUNTIME_DALVIK_LIB,
+    ANDROID_RUNTIME_ART_LIB
+};
+
 #endif
 
 GST_DEBUG_CATEGORY_EXTERN(_owrsession_debug);
