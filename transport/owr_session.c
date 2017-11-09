@@ -758,7 +758,7 @@ static OwrIceState owr_session_aggregate_ice_state(OwrIceState rtp_ice_state,
 
 JNIEXPORT void JNICALL Java_com_ericsson_research_owr_sdk_RtcSessionImpl_initEnv(JNIEnv * env,jobject jObj){
 	mEnv = env;
-	__android_log_write(ANDROID_LOG_ERROR, "OWR_INIT_ENV_CALL", "CALLING initENV");
+	//__android_log_write(ANDROID_LOG_ERROR, "OWR_INIT_ENV_CALL", "CALLING initENV");
 
 }
 
@@ -767,7 +767,7 @@ void Java_com_ericsson_research_owr_sdk_RtcSessionImpl_someMethod(JNIEnv *jniEnv
     jclass *clazz = (*(*jniEnv)->FindClass)(jniEnv, "com/ericsson/research/owr/sdk/RtcSessionImpl");
     jmethodID MethodID = (*(*jniEnv)->GetStaticMethodID)(jniEnv, clazz, "CallIceFailed", "(I)I");
     int result = (*(*jniEnv)->CallStaticIntMethod)(jniEnv, clazz, MethodID, 18);
-    __android_log_write(ANDROID_LOG_ERROR, "OWR_SOME_METHOD", "CALLING CALLIceFailed");
+   // __android_log_write(ANDROID_LOG_ERROR, "OWR_SOME_METHOD", "CALLING CALLIceFailed");
 }
 
 
