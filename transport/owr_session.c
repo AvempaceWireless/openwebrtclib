@@ -57,27 +57,8 @@
 #include <jni.h>
 #include <stdlib.h>
 
-#define OWR_DEVICE_LIST_JNI_VERSION JNI_VERSION_1_6
-#define OWR_DEVICE_LIST_MIN_SDK_VERSION 9
+JNIEnv *mEnv;
 
-#define ANDROID_RUNTIME_DALVIK_LIB "libdvm.so"
-#define ANDROID_RUNTIME_ART_LIB "libart.so"
-
-
-typedef jint (*JNI_GetCreatedJavaVMs)(JavaVM **vmBuf, jsize bufLen, jsize *nVMs);
-
-static const char *const android_runtime_libs[] = {
-    NULL,
-    ANDROID_RUNTIME_DALVIK_LIB,
-    ANDROID_RUNTIME_ART_LIB
-};
-
-static void on_java_detach(JavaVM *jvm);
-static JavaVM *get_java_vm(void);
-static JNIEnv* get_jni_env_from_jvm(JavaVM *jvm);
-//static void init_jni(JavaVM *jvm);
-static JNIEnv* get_jni_env(void);
-static void javaDefineString(JNIEnv * env, char * name, jint index, char * value);
 
 #endif
 
@@ -774,125 +755,25 @@ static OwrIceState owr_session_aggregate_ice_state(OwrIceState rtp_ice_state,
 // Abdelhamid Methods
 #ifdef __ANDROID__
 
-static void on_java_detach(JavaVM *jvm)
-{
-    g_return_if_fail(jvm);
 
-    g_debug("%s detached thread(%ld) from Java VM", __FUNCTION__, pthread_self());
-    (*jvm)->DetachCurrentThread(jvm);
-    pthread_setspecific(detach_key, NULL);
+JNIEXPORT void JNICALL Java_com_ericsson_research_owr_sdk_RtcSessionImpl_initEnv(JNIEnv * env,jobject jObj){
+	mEnv = &env;
+	__android_log_write(ANDROID_LOG_ERROR, "OWR_INIT_ENV_CALL", "CALLING initENV");
+
 }
 
-static JavaVM *get_java_vm(void)
+void Java_com_ericsson_research_owr_sdk_RtcSessionImpl_someMethod(JNIEnv *jniEnv)
 {
-    JNI_GetCreatedJavaVMs get_created_java_vms;
-    gpointer handle = NULL;
-    static JavaVM *jvm = NULL;
-    const gchar *error_string;
-    jsize num_jvms = 0;
-    guint lib_index;
-    gint err;
-
-    for (lib_index = 0; !jvm && lib_index < G_N_ELEMENTS(android_runtime_libs); lib_index++) {
-        dlerror();
-        handle = dlopen(android_runtime_libs[lib_index], RTLD_LOCAL | RTLD_LAZY);
-
-        if (!handle) {
-            g_debug("failed to load %s: %s", android_runtime_libs[lib_index], dlerror());
-            continue;
-        }
-
-        g_debug("Android runtime loaded from %s", android_runtime_libs[lib_index]);
-
-        dlerror();
-        *(void **) (&get_created_java_vms) = dlsym(handle, "JNI_GetCreatedJavaVMs");
-        error_string = dlerror();
-
-        if (!error_string) {
-            get_created_java_vms(&jvm, 1, &num_jvms);
-
-            if (num_jvms < 1)
-                g_debug("get_created_java_vms returned %d jvms", num_jvms);
-            else
-                g_debug("found existing jvm");
-        } else
-            g_warning("dlsym(\"JNI_GetCreatedJavaVMs\") failed: %s", error_string);
-
-        err = dlclose(handle);
-        if (err)
-            g_warning("dlclose() of android runtime handle failed");
-    }
-
-    if (!jvm)
-        g_error("Failed to get jvm");
-
-    return jvm;
+    jclass *clazz = (*(*jniEnv)->FindClass)(jniEnv, "com/ericsson/research/owr/sdk/RtcSessionImpl");
+    jmethodID MethodID = (*(*jniEnv)->GetStaticMethodID)(jniEnv, clazz, "CallIceFailed", "(I)I");
+    int result = (*(*jniEnv)->CallStaticIntMethod)(jniEnv, clazz, MethodID, 18);
+    __android_log_write(ANDROID_LOG_ERROR, "OWR_SOME_METHOD", "CALLING CALLIceFailed");
 }
 
 
-static JNIEnv* get_jni_env_from_jvm(JavaVM *jvm)
-{
-    JNIEnv *env = NULL;
-    int err;
-
-    g_return_val_if_fail(jvm, NULL);
-
-    err = (*jvm)->GetEnv(jvm, (void**)&env, OWR_DEVICE_LIST_JNI_VERSION);
-
-    if (JNI_EDETACHED == err) {
-        err = (*jvm)->AttachCurrentThread(jvm, &env, NULL);
-
-        if (err) {
-            g_warning("android device list: failed to attach current thread");
-            return NULL;
-        }
-
-        g_debug("attached thread (%ld) to jvm", pthread_self());
-
-        if (pthread_key_create(&detach_key, (void (*)(void *)) on_java_detach))
-            g_warning("android device list: failed to set on_java_detach");
-
-        pthread_setspecific(detach_key, jvm);
-    } else if (JNI_OK != err)
-        g_warning("jvm->GetEnv() failed");
-
-    return env;
-}
 
 
-/* jvm needs to be fetched once, jni env needs to be fetched once per thread */
-static JNIEnv* get_jni_env(void)
-{
-    static JavaVM *jvm = NULL;
 
-    if (g_once_init_enter(&jvm)) {
-        JavaVM *vm;
-        vm = get_java_vm();
-       // init_jni(vm);
-        g_once_init_leave(&jvm, vm);
-    }
-
-    g_return_val_if_fail(jvm, NULL);
-
-    return get_jni_env_from_jvm(jvm);
-}
-
-
-/*static void init_jni(JavaVM *jvm)
-{
-    JNIEnv *env;
-    
-    env = get_jni_env_from_jvm(jvm);
-
-}*/
-
-
-static void javaDefineString(JNIEnv * env, char * name, jint index, char * value) 
-{
-  jstring string = (*env)->NewStringUTF(env, name);
-  jobject javaObjectRef = (*env)->NewObject(env, javaClassRef, midStr);
-  (*env)->CallVoidMethod(env, javaObjectRef, midStr, string, index, (*env)->NewStringUTF(env, value));
-}
 #endif
 
 void _owr_session_emit_ice_state_changed(OwrSession *session, guint session_id,
@@ -937,18 +818,10 @@ void _owr_session_emit_ice_state_changed(OwrSession *session, guint session_id,
 
 // ABDELHAMID : Init - One time to initialize the method id, (use an init() function)
     
-  //  if(once)
-  //  {
-	 
-	JNIEnv *env = get_jni_env();
-	jclass dataClass = (*env)->FindClass(env,"com/video/avempace/avemvideo/activities/MainActivity");
-    	javaClassRef = (jclass) (*env)->NewGlobalRef(env, dataClass);
-	midStr = (*env)->GetMethodID(env, javaClassRef, "javaDefineString", sigStr);
-//	once = 0;
-  //  }
-
+  
+	Java_com_ericsson_research_owr_sdk_RtcSessionImpl_someMethod(mEnv);
     	
-    javaDefineString(env, "ICE_FAILED", 0, "AVEMPACE ICE failed to establish a connection");
+  //  javaDefineString(env, "ICE_FAILED", 0, "AVEMPACE ICE failed to establish a connection");
 		
 #endif
 			
