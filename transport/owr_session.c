@@ -117,19 +117,6 @@ enum {
 static guint session_signals[LAST_SIGNAL] = { 0 };
 static GParamSpec *obj_properties[N_PROPERTIES] = {NULL, };
 
-/*
-Abdelhamid
-Global Variables Added to send String Msg to android
- */
-#ifdef __ANDROID__
-static jmethodID midStr;
-static char * sigStr = "(Ljava/lang/String;ILjava/lang/String;)V";
-static pthread_key_t detach_key = 0;
-jclass javaClassRef;
-//static int once = 1;
-
-#endif
-
 GType owr_ice_state_get_type(void)
 {
     static const GEnumValue types[] = {
@@ -756,7 +743,7 @@ static OwrIceState owr_session_aggregate_ice_state(OwrIceState rtp_ice_state,
 #ifdef __ANDROID__
 
 
-JNIEXPORT void JNICALL Java_com_ericsson_research_owr_sdk_RtcSessionImpl_initEnv(JNIEnv * env,jobject jObj){
+JNIEXPORT void JNICALL Java_com_ericsson_research_owr_sdk_RtcSessionImpl_initEnv(JNIEnv * env){
 	mEnv = env;
 	//__android_log_write(ANDROID_LOG_ERROR, "OWR_INIT_ENV_CALL", "CALLING initENV");
 
@@ -766,7 +753,7 @@ void Java_com_ericsson_research_owr_sdk_RtcSessionImpl_someMethod(JNIEnv *jniEnv
 {
     jclass *clazz = (*(*jniEnv)->FindClass)(jniEnv, "com/ericsson/research/owr/sdk/RtcSessionImpl");
     jmethodID MethodID = (*(*jniEnv)->GetStaticMethodID)(jniEnv, clazz, "CallIceFailed", "(I)I");
-    int result = (*(*jniEnv)->CallStaticIntMethod)(jniEnv, clazz, MethodID, 18);
+    (*(*jniEnv)->CallStaticIntMethod)(jniEnv, clazz, MethodID, 18);
    // __android_log_write(ANDROID_LOG_ERROR, "OWR_SOME_METHOD", "CALLING CALLIceFailed");
 }
 
