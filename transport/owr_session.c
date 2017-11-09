@@ -757,7 +757,7 @@ static OwrIceState owr_session_aggregate_ice_state(OwrIceState rtp_ice_state,
 
 
 JNIEXPORT void JNICALL Java_com_ericsson_research_owr_sdk_RtcSessionImpl_initEnv(JNIEnv * env,jobject jObj){
-	mEnv = &env;
+	mEnv = env;
 	__android_log_write(ANDROID_LOG_ERROR, "OWR_INIT_ENV_CALL", "CALLING initENV");
 
 }
