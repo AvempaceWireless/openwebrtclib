@@ -144,7 +144,9 @@ TickContext g_ctx;
  *     the pairing function JNI_OnUnload() never gets called at all.
  */
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved) {
+	
     JNIEnv* env;
+    UNUSED(reserved);
     memset(&g_ctx, 0, sizeof(g_ctx));
 
     g_ctx.javaVM = vm;
