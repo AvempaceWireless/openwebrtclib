@@ -50,19 +50,6 @@
 
 #include <string.h>
 
-
-#ifdef __ANDROID__
-#include <assert.h>
-#include <dlfcn.h>
-#include <jni.h>
-#include <stdlib.h>
-#include <android/log.h>
-
-JNIEnv *mEnv;
-
-
-#endif
-
 GST_DEBUG_CATEGORY_EXTERN(_owrsession_debug);
 #define GST_CAT_DEFAULT _owrsession_debug
 
@@ -740,30 +727,6 @@ static OwrIceState owr_session_aggregate_ice_state(OwrIceState rtp_ice_state,
     return rtp_ice_state < rtcp_ice_state ? rtp_ice_state : rtcp_ice_state;
 }
 
-// Abdelhamid Methods
-#ifdef __ANDROID__
-
-
-JNIEXPORT void JNICALL Java_com_ericsson_research_owr_sdk_RtcSessionImpl_initEnv(JNIEnv * env){
-	mEnv = env;
-	__android_log_write(ANDROID_LOG_ERROR, "OWR_INIT_ENV_CALL", "CALLING initENV");
-
-}
-
-void Java_com_ericsson_research_owr_sdk_RtcSessionImpl_someMethod(JNIEnv *jniEnv)
-{
-    jclass *clazz = (*(*jniEnv)->FindClass)(jniEnv, "com/ericsson/research/owr/sdk/RtcSessionImpl");
-    jmethodID MethodID = (*(*jniEnv)->GetStaticMethodID)(jniEnv, clazz, "CallIceFailed", "(I)I");
-    (*(*jniEnv)->CallStaticIntMethod)(jniEnv, clazz, MethodID, 18);
-    __android_log_write(ANDROID_LOG_ERROR, "OWR_SOME_METHOD", "CALLING CALLIceFailed");
-}
-
-
-
-
-
-#endif
-
 void _owr_session_emit_ice_state_changed(OwrSession *session, guint session_id,
     OwrComponentType component_type, OwrIceState state)
 {
@@ -800,20 +763,6 @@ void _owr_session_emit_ice_state_changed(OwrSession *session, guint session_id,
         GST_ERROR_OBJECT(session, "Session %u, AVEMPACE ICE failed to establish a connection!\n"
             "ICE state changed from %s to %s",
             session_id, old_state_name, new_state_name);
-
-#ifdef __ANDROID__
-
-
-// ABDELHAMID : Init - One time to initialize the method id, (use an init() function)
-    
-  
-	Java_com_ericsson_research_owr_sdk_RtcSessionImpl_someMethod(mEnv);
-    	
-  //  javaDefineString(env, "ICE_FAILED", 0, "AVEMPACE ICE failed to establish a connection");
-		
-#endif
-			
-			
     } else if (new_state == OWR_ICE_STATE_CONNECTED || new_state == OWR_ICE_STATE_READY) {
         GST_INFO_OBJECT(session, "Session %u, ICE state changed from %s to %s",
             session_id, old_state_name, new_state_name);
