@@ -814,7 +814,7 @@ static OwrIceState owr_session_aggregate_ice_state(OwrIceState rtp_ice_state,
 
 
 #ifdef __ANDROID__
-void callback_ice_failed(void)
+int callback_ice_failed(void)
 {
 	JNIEnv* env;
 	JavaVM* vm;
@@ -823,7 +823,7 @@ void callback_ice_failed(void)
         LOGI("-----> callback_ice_failed - %s", "CALLED");
 	if ((*vm)->GetEnv(vm, (void**)&env, JNI_VERSION_1_6) != JNI_OK) 
 	{
-           return JNI_ERR; // JNI version not supported.
+           return 0; // JNI version not supported.
         }
 
 	jmethodID statusId = (*env)->GetMethodID(env, g_ctx->jniHelperClz,"callbackIceFailed", "(Ljava/lang/String;)V");
