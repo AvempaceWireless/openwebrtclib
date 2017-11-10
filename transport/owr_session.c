@@ -125,7 +125,7 @@ static const char* kTAG = "hello-jniCallback";
 #define UNUSED(x) (void)(x)
 // processing callback to handler class
 typedef struct tick_context {
-    JNIEnv  *javaEnv
+    JNIEnv  *javaEnv;
     JavaVM  *javaVM;
     jclass   jniHelperClz;
     jobject  jniHelperObj;
