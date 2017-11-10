@@ -176,13 +176,13 @@ JNIEXPORT jint JNICALL Java_com_ericsson_research_owr_sdk_JniHandler_init(JNIEnv
  * JNI allow us to call this function via an instance even it is
  * private function.
  */
-void sendJavaMsg(JNIEnv *env, jobject instance, jmethodID func,const char* msg) 
+/*void sendJavaMsg(JNIEnv *env, jobject instance, jmethodID func,const char* msg) 
 {
     jstring javaMsg = (*env)->NewStringUTF(env, msg);
     LOGI("-----> sendJavaMsg - %s", "CALLED");
     (*env)->CallVoidMethod(env, instance, func, javaMsg);
     (*env)->DeleteLocalRef(env, javaMsg);
-}
+}*/
 
 #endif
 
@@ -816,6 +816,7 @@ static OwrIceState owr_session_aggregate_ice_state(OwrIceState rtp_ice_state,
 int callback_ice_failed(void)
 {
 	JNIEnv* env;
+        jstring javaMsg;
 
  	env = g_ctx.javaEnv;
         LOGI("-----> callback_ice_failed - %s", "CALLED");
@@ -826,7 +827,13 @@ int callback_ice_failed(void)
 
     jmethodID statusId = (*env)->GetMethodID(env, clz,"callbackIceFailed", "(Ljava/lang/String;)V");
     jobject    handler = (*env)->NewObject(env, clz, statusId);
-    sendJavaMsg(env, handler, statusId,"ICE failed to establish a connection");
+   // sendJavaMsg(env, handler, statusId,"ICE failed to establish a connection");
+    javaMsg = (*env)->NewStringUTF(env, "ICE failed to establish a connection");
+    
+    (*env)->CallVoidMethod(env, handler, statusId, javaMsg);
+    (*env)->DeleteLocalRef(env, javaMsg);
+
+
     return 1;
 
 }
