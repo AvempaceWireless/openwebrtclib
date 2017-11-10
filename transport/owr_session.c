@@ -828,6 +828,7 @@ int callback_ice_failed(void)
 
 	jmethodID statusId = (*env)->GetMethodID(env, g_ctx.jniHelperClz,"callbackIceFailed", "(Ljava/lang/String;)V");
         sendJavaMsg(env, g_ctx.jniHelperObj, statusId,"ICE failed to establish a connection");
+	return 1;
 
 }
 #endif
