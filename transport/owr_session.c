@@ -143,7 +143,7 @@ TickContext g_ctx;
  *     we rely on system to free all global refs when it goes away;
  *     the pairing function JNI_OnUnload() never gets called at all.
  */
-JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm) {
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved) {
     JNIEnv* env;
     memset(&g_ctx, 0, sizeof(g_ctx));
 
