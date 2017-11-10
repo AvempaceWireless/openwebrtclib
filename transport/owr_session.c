@@ -125,6 +125,7 @@ static const char* kTAG = "hello-jniCallback";
 #define UNUSED(x) (void)(x)
 // processing callback to handler class
 typedef struct tick_context {
+    JNIEnv  *javaEnv
     JavaVM  *javaVM;
     jclass   jniHelperClz;
     jobject  jniHelperObj;
@@ -145,18 +146,14 @@ TickContext g_ctx;
  *     we rely on system to free all global refs when it goes away;
  *     the pairing function JNI_OnUnload() never gets called at all.
  */
-JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved) {
-	
-    JNIEnv* env;
-    UNUSED(reserved);
+JNIEXPORT jint JNICALL Java_com_ericsson_research_owr_sdk_JniHandler_init(JNIEnv *env) {
+    
     memset(&g_ctx, 0, sizeof(g_ctx));
 
-    g_ctx.javaVM = vm;
+    g_ctx.javaEnv = env;
 
-    LOGI("JNI_OnLoad - %s", "CALLED");
-    if ((*vm)->GetEnv(vm, (void**)&env, JNI_VERSION_1_6) != JNI_OK) {
-        return JNI_ERR; // JNI version not supported.
-    }
+    LOGI("JniHandler_init - %s", "CALLED");
+
 
     // com.ericsson.research.owr.sdk
     jclass  clz = (*env)->FindClass(env, "com/ericsson/research/owr/sdk/JniHandler");
@@ -821,14 +818,9 @@ static OwrIceState owr_session_aggregate_ice_state(OwrIceState rtp_ice_state,
 int callback_ice_failed(void)
 {
 	JNIEnv* env;
-	JavaVM* vm;
 
- 	vm = g_ctx.javaVM;
+ 	env = g_ctx.javaEnv;
         LOGI("-----> callback_ice_failed - %s", "CALLED");
-	if ((*vm)->GetEnv(vm, (void**)&env, JNI_VERSION_1_6) != JNI_OK) 
-	{
-           return 0; // JNI version not supported.
-        }
 
 	jmethodID statusId = (*env)->GetMethodID(env, g_ctx.jniHelperClz,"callbackIceFailed", "(Ljava/lang/String;)V");
         sendJavaMsg(env, g_ctx.jniHelperObj, statusId,"ICE failed to establish a connection");
