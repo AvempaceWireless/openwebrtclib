@@ -113,6 +113,7 @@ enum {
 
 // Android log function wrappers
 #ifdef __ANDROID__
+
 static const char* kTAG = "hello-jniCallback";
 #define LOGI(...) \
   ((void)__android_log_print(ANDROID_LOG_INFO, kTAG, __VA_ARGS__))
@@ -121,6 +122,7 @@ static const char* kTAG = "hello-jniCallback";
 #define LOGE(...) \
   ((void)__android_log_print(ANDROID_LOG_ERROR, kTAG, __VA_ARGS__))
 
+#define UNUSED(x) (void)(x)
 // processing callback to handler class
 typedef struct tick_context {
     JavaVM  *javaVM;
