@@ -156,19 +156,17 @@ JNIEXPORT jint JNICALL Java_com_ericsson_research_owr_sdk_JniHandler_init(JNIEnv
 
 
     // com.ericsson.research.owr.sdk
-    jclass  clz = (*env)->FindClass(env, "com/ericsson/research/owr/sdk/JniHandler");
-    g_ctx.jniHelperClz = (*env)->NewGlobalRef(env, clz);
+   // jclass  clz = (*env)->FindClass(env, "com/ericsson/research/owr/sdk/JniHandler");
+    //g_ctx.jniHelperClz = (*env)->NewGlobalRef(env, clz);
 
-    jmethodID  jniHelperCtor = (*env)->GetMethodID(env, g_ctx.jniHelperClz, "<init>", "()V");
+    //jmethodID  jniHelperCtor = (*env)->GetMethodID(env, g_ctx.jniHelperClz, "<init>", "()V");
 
-    jobject    handler = (*env)->NewObject(env, g_ctx.jniHelperClz, jniHelperCtor);
+    //jobject    handler = (*env)->NewObject(env, g_ctx.jniHelperClz, jniHelperCtor);
 
-    g_ctx.jniHelperObj = (*env)->NewGlobalRef(env, handler);
+   // g_ctx.jniHelperObj = (*env)->NewGlobalRef(env, handler);
 
-   // queryRuntimeInfo(env, g_ctx.jniHelperObj);
-
-    g_ctx.done = 0;
-    g_ctx.mainActivityObj = NULL;
+   // g_ctx.done = 0;
+   // g_ctx.mainActivityObj = NULL;
     return  JNI_VERSION_1_6;
 }
 
@@ -822,9 +820,14 @@ int callback_ice_failed(void)
  	env = g_ctx.javaEnv;
         LOGI("-----> callback_ice_failed - %s", "CALLED");
 
-	jmethodID statusId = (*env)->GetMethodID(env, g_ctx.jniHelperClz,"callbackIceFailed", "(Ljava/lang/String;)V");
-        sendJavaMsg(env, g_ctx.jniHelperObj, statusId,"ICE failed to establish a connection");
-	return 1;
+    jclass  clz = (*env)->FindClass(env, "com/ericsson/research/owr/sdk/JniHandler");
+   
+
+
+    jmethodID statusId = (*env)->GetMethodID(env, clz,"callbackIceFailed", "(Ljava/lang/String;)V");
+    jobject    handler = (*env)->NewObject(env, clz, statusId);
+    sendJavaMsg(env, handler, statusId,"ICE failed to establish a connection");
+    return 1;
 
 }
 #endif
