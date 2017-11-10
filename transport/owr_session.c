@@ -50,6 +50,15 @@
 
 #include <string.h>
 
+#ifdef __ANDROID__
+#include <android/log.h>
+#include <assert.h>
+#include <dlfcn.h>
+#include <jni.h>
+#include <stdlib.h>
+
+#endif
+
 GST_DEBUG_CATEGORY_EXTERN(_owrsession_debug);
 #define GST_CAT_DEFAULT _owrsession_debug
 
@@ -101,6 +110,82 @@ enum {
 
     N_PROPERTIES
 };
+
+// Android log function wrappers
+#ifdef __ANDROID__
+static const char* kTAG = "hello-jniCallback";
+#define LOGI(...) \
+  ((void)__android_log_print(ANDROID_LOG_INFO, kTAG, __VA_ARGS__))
+#define LOGW(...) \
+  ((void)__android_log_print(ANDROID_LOG_WARN, kTAG, __VA_ARGS__))
+#define LOGE(...) \
+  ((void)__android_log_print(ANDROID_LOG_ERROR, kTAG, __VA_ARGS__))
+
+// processing callback to handler class
+typedef struct tick_context {
+    JavaVM  *javaVM;
+    jclass   jniHelperClz;
+    jobject  jniHelperObj;
+    jclass   mainActivityClz;
+    jobject  mainActivityObj;
+    pthread_mutex_t  lock;
+    int      done;
+} TickContext;
+TickContext g_ctx;
+/*
+ * processing one time initialization:
+ *     Cache the javaVM into our context
+ *     Find class ID for JniHelper
+ *     Create an instance of JniHelper
+ *     Make global reference since we are using them from a native thread
+ * Note:
+ *     All resources allocated here are never released by application
+ *     we rely on system to free all global refs when it goes away;
+ *     the pairing function JNI_OnUnload() never gets called at all.
+ */
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved) {
+    JNIEnv* env;
+    memset(&g_ctx, 0, sizeof(g_ctx));
+
+    g_ctx.javaVM = vm;
+
+    LOGI("JNI_OnLoad - %s", "CALLED");
+    if ((*vm)->GetEnv(vm, (void**)&env, JNI_VERSION_1_6) != JNI_OK) {
+        return JNI_ERR; // JNI version not supported.
+    }
+
+    // com.ericsson.research.owr.sdk
+    jclass  clz = (*env)->FindClass(env, "com/ericsson/research/owr/sdk/JniHandler");
+    g_ctx.jniHelperClz = (*env)->NewGlobalRef(env, clz);
+
+    jmethodID  jniHelperCtor = (*env)->GetMethodID(env, g_ctx.jniHelperClz, "<init>", "()V");
+
+    jobject    handler = (*env)->NewObject(env, g_ctx.jniHelperClz, jniHelperCtor);
+
+    g_ctx.jniHelperObj = (*env)->NewGlobalRef(env, handler);
+
+   // queryRuntimeInfo(env, g_ctx.jniHelperObj);
+
+    g_ctx.done = 0;
+    g_ctx.mainActivityObj = NULL;
+    return  JNI_VERSION_1_6;
+}
+
+
+/*
+ * A helper function to wrap java JniHelper::updateStatus(String msg)
+ * JNI allow us to call this function via an instance even it is
+ * private function.
+ */
+void sendJavaMsg(JNIEnv *env, jobject instance, jmethodID func,const char* msg) 
+{
+    jstring javaMsg = (*env)->NewStringUTF(env, msg);
+    LOGI("-----> sendJavaMsg - %s", "CALLED");
+    (*env)->CallVoidMethod(env, instance, func, javaMsg);
+    (*env)->DeleteLocalRef(env, javaMsg);
+}
+
+#endif
 
 static guint session_signals[LAST_SIGNAL] = { 0 };
 static GParamSpec *obj_properties[N_PROPERTIES] = {NULL, };
@@ -727,6 +812,27 @@ static OwrIceState owr_session_aggregate_ice_state(OwrIceState rtp_ice_state,
     return rtp_ice_state < rtcp_ice_state ? rtp_ice_state : rtcp_ice_state;
 }
 
+
+#ifdef __ANDROID__
+void callback_ice_failed(void)
+{
+	JNIEnv* env;
+	JavaVM* vm;
+
+ 	vm = g_ctx.javaVM;
+        LOGI("-----> callback_ice_failed - %s", "CALLED");
+	if ((*vm)->GetEnv(vm, (void**)&env, JNI_VERSION_1_6) != JNI_OK) 
+	{
+           return JNI_ERR; // JNI version not supported.
+        }
+
+	jmethodID statusId = (*env)->GetMethodID(env, g_ctx->jniHelperClz,"callbackIceFailed", "(Ljava/lang/String;)V");
+        sendJavaMsg(env, g_ctx->jniHelperObj, statusId,"ICE failed to establish a connection");
+
+}
+#endif
+
+
 void _owr_session_emit_ice_state_changed(OwrSession *session, guint session_id,
     OwrComponentType component_type, OwrIceState state)
 {
@@ -763,6 +869,13 @@ void _owr_session_emit_ice_state_changed(OwrSession *session, guint session_id,
         GST_ERROR_OBJECT(session, "Session %u, AVEMPACE ICE failed to establish a connection!\n"
             "ICE state changed from %s to %s",
             session_id, old_state_name, new_state_name);
+#ifdef __ANDROID__
+	    callback_ice_failed();
+#endif
+
+	    
+
+
     } else if (new_state == OWR_ICE_STATE_CONNECTED || new_state == OWR_ICE_STATE_READY) {
         GST_INFO_OBJECT(session, "Session %u, ICE state changed from %s to %s",
             session_id, old_state_name, new_state_name);
