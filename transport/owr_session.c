@@ -136,7 +136,7 @@ typedef struct tick_context {
 } TickContext;
 TickContext g_ctx;
 
-JavaVM  *jvm;
+static JavaVM *jvm;
 /*
  * processing one time initialization:
  *     Cache the javaVM into our context
@@ -153,8 +153,14 @@ JNIEXPORT jint JNICALL Java_com_ericsson_research_owr_sdk_JniHandler_initJni(JNI
     memset(&g_ctx, 0, sizeof(g_ctx));
 
     g_ctx.javaEnv = env;
+    
+
+    int status = (*env)->GetJavaVM(env, &jvm);
     g_ctx.jniHelperObj = jObj;
-    (*env)->GetJavaVm(env,&(JavaVM*)jvm);
+    if(status != 0) {
+        // Fail!
+    LOGE("JniHandler_init FAIL GetJavaVM- %s", "CALLED");
+    }
 
     LOGI("JniHandler_init - %s", "CALLED");
 
@@ -807,24 +813,15 @@ static OwrIceState owr_session_aggregate_ice_state(OwrIceState rtp_ice_state,
 
 #ifdef __ANDROID__
 
-JNIEnv* AttachJava()
-{
-    JavaVMAttachArgs args = {JNI_VERSION_1_2, 0, 0};
-    JNIEnv* java;
-    LOGI("-----> AttachJava VM - %s", "CALLED");
-    jvm->AttachCurrentThread((void**) &java, &args);
-    //(*jvm)->AttachCurrentThread(java,&java, NULL);
-    return java;
-}
-
 
 int callback_ice_failed(void)
 {
-	JNIEnv* env;
 	jobject obj;
-       
+        JNIEnv *env;
+        (*jvm)->AttachCurrentThread(jvm, (void **)&env, NULL);
+
 	obj = g_ctx.jniHelperObj;
- 	env = AttachJava();
+
         LOGI("-----> callback_ice_failed - %s", "CALLED");
 
     jclass  clz = (*env)->FindClass(env, "com/ericsson/research/owr/sdk/JniHandler");
