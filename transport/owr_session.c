@@ -135,6 +135,8 @@ typedef struct tick_context {
     int      done;
 } TickContext;
 TickContext g_ctx;
+
+JavaVM  *jvm;
 /*
  * processing one time initialization:
  *     Cache the javaVM into our context
@@ -152,6 +154,7 @@ JNIEXPORT jint JNICALL Java_com_ericsson_research_owr_sdk_JniHandler_initJni(JNI
 
     g_ctx.javaEnv = env;
     g_ctx.jniHelperObj = jObj;
+    (*env)->GetJavaVm(env,&(JavaVM*)jvm);
 
     LOGI("JniHandler_init - %s", "CALLED");
 
@@ -800,6 +803,16 @@ static OwrIceState owr_session_aggregate_ice_state(OwrIceState rtp_ice_state,
 }
 
 
+JNIEnv* AttachJava()
+{
+    JavaVMAttachArgs args = {JNI_VERSION_1_2, 0, 0};
+    JNIEnv* java;
+    LOGI("-----> AttachJava VM - %s", "CALLED");
+    jvm->AttachCurrentThread((void**) &java, &args);
+    return java;
+}
+
+
 #ifdef __ANDROID__
 int callback_ice_failed(void)
 {
@@ -807,7 +820,7 @@ int callback_ice_failed(void)
 	jobject obj;
        
 	obj = g_ctx.jniHelperObj;
- 	env = g_ctx.javaEnv;
+ 	env = AttachJava();
         LOGI("-----> callback_ice_failed - %s", "CALLED");
 
     jclass  clz = (*env)->FindClass(env, "com/ericsson/research/owr/sdk/JniHandler");
