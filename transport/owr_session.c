@@ -805,10 +805,10 @@ static OwrIceState owr_session_aggregate_ice_state(OwrIceState rtp_ice_state,
 
 JNIEnv* AttachJava()
 {
-    JavaVMAttachArgs args = {JNI_VERSION_1_2, 0, 0};
+    //JavaVMAttachArgs args = {JNI_VERSION_1_2, 0, 0};
     JNIEnv* java;
     LOGI("-----> AttachJava VM - %s", "CALLED");
-    jvm->AttachCurrentThread((void**) &java, &args);
+    (*jvm)->AttachCurrentThread(java,&java, NULL);
     return java;
 }
 
