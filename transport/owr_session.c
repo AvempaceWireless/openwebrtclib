@@ -146,27 +146,15 @@ TickContext g_ctx;
  *     we rely on system to free all global refs when it goes away;
  *     the pairing function JNI_OnUnload() never gets called at all.
  */
-JNIEXPORT jint JNICALL Java_com_ericsson_research_owr_sdk_JniHandler_init(JNIEnv *env) {
+JNIEXPORT jint JNICALL Java_com_ericsson_research_owr_sdk_JniHandler_initJni(JNIEnv *env, jobject jObj) {
     
     memset(&g_ctx, 0, sizeof(g_ctx));
 
     g_ctx.javaEnv = env;
+    g_ctx.jniHelperObj = jObj;
 
     LOGI("JniHandler_init - %s", "CALLED");
 
-
-    // com.ericsson.research.owr.sdk
-   // jclass  clz = (*env)->FindClass(env, "com/ericsson/research/owr/sdk/JniHandler");
-    //g_ctx.jniHelperClz = (*env)->NewGlobalRef(env, clz);
-
-    //jmethodID  jniHelperCtor = (*env)->GetMethodID(env, g_ctx.jniHelperClz, "<init>", "()V");
-
-    //jobject    handler = (*env)->NewObject(env, g_ctx.jniHelperClz, jniHelperCtor);
-
-   // g_ctx.jniHelperObj = (*env)->NewGlobalRef(env, handler);
-
-   // g_ctx.done = 0;
-   // g_ctx.mainActivityObj = NULL;
     return  JNI_VERSION_1_6;
 }
 
@@ -816,22 +804,21 @@ static OwrIceState owr_session_aggregate_ice_state(OwrIceState rtp_ice_state,
 int callback_ice_failed(void)
 {
 	JNIEnv* env;
-        jstring javaMsg;
-
+	jobject obj;
+       
+	obj = g_ctx.jniHelperObj;
  	env = g_ctx.javaEnv;
         LOGI("-----> callback_ice_failed - %s", "CALLED");
 
     jclass  clz = (*env)->FindClass(env, "com/ericsson/research/owr/sdk/JniHandler");
    
-
-
-    jmethodID statusId = (*env)->GetMethodID(env, clz,"callbackIceFailed", "(Ljava/lang/String;)V");
-    jobject    handler = (*env)->NewObject(env, clz, statusId);
+    jmethodID statusId = (*env)->GetStaticMethodID(env, clz,"callbackIceFailed", "()V");
+    //jobject    handler = (*env)->NewObject(env, clz, statusId);
    // sendJavaMsg(env, handler, statusId,"ICE failed to establish a connection");
-    javaMsg = (*env)->NewStringUTF(env, "ICE failed to establish a connection");
+   // javaMsg = (*env)->NewStringUTF(env, "ICE failed to establish a connection");
     
-    (*env)->CallVoidMethod(env, handler, statusId, javaMsg);
-    (*env)->DeleteLocalRef(env, javaMsg);
+    (*env)->CallStaticVoidMethod(env, obj, statusId);
+    //(*env)->DeleteLocalRef(env, javaMsg);
 
 
     return 1;
