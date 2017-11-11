@@ -818,7 +818,7 @@ int callback_ice_failed(void)
 {
 	jobject obj;
         JNIEnv *env;
-        (*jvm)->AttachCurrentThread(jvm, (void **)&env, NULL);
+        (*jvm)->AttachCurrentThread(jvm,&env, NULL);
 
 	obj = g_ctx.jniHelperObj;
 
