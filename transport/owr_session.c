@@ -816,17 +816,21 @@ static OwrIceState owr_session_aggregate_ice_state(OwrIceState rtp_ice_state,
 
 int callback_ice_failed(void)
 {
-	jobject obj;
-        JNIEnv *env;
-        (*jvm)->AttachCurrentThread(jvm,&env, NULL);
+    jobject obj;
+    JNIEnv *env;
+    (*jvm)->AttachCurrentThread(jvm,&env, NULL);
 
-	obj = g_ctx.jniHelperObj;
+    obj = g_ctx.jniHelperObj;
 
-        LOGI("-----> callback_ice_failed - %s", "CALLED");
+    LOGI("-----> callback_ice_failed - %s", "CALLED");
 
     jclass  clz = (*env)->FindClass(env, "com/ericsson/research/owr/sdk/JniHandler");
    
     jmethodID statusId = (*env)->GetStaticMethodID(env, clz,"callbackIceFailed", "()V");
+
+    UNUSED(statusId);
+    UNUSED(obj);
+
     //jobject    handler = (*env)->NewObject(env, clz, statusId);
    // sendJavaMsg(env, handler, statusId,"ICE failed to establish a connection");
    // javaMsg = (*env)->NewStringUTF(env, "ICE failed to establish a connection");
