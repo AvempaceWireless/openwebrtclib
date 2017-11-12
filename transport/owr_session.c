@@ -831,7 +831,7 @@ int callback_ice_failed(void)
    // sendJavaMsg(env, handler, statusId,"ICE failed to establish a connection");
    // javaMsg = (*env)->NewStringUTF(env, "ICE failed to establish a connection");
     
-    (*env)->CallStaticVoidMethod(env, obj, statusId);
+    //(*env)->CallStaticVoidMethod(env, obj, statusId);
     //(*env)->DeleteLocalRef(env, javaMsg);
 
 
