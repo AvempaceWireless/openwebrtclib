@@ -547,7 +547,7 @@ static GstElement *owr_local_media_source_request_source(OwrMediaSource *media_s
     a 40ms buffer-time with a 20ms latency-time causes crackling audio.
     So let's just stick with the defaults.
 */
-#if !defined(__ANDROID__)
+#if defined(__ANDROID__)
 
 		/*buffer-time : 40000*/
 		/*latency-time : 10000*/
