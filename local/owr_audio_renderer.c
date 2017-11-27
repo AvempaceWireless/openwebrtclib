@@ -174,8 +174,13 @@ static GstElement *owr_audio_renderer_get_element(OwrMediaRenderer *renderer)
     sink = OWR_MEDIA_RENDERER_GET_CLASS(renderer)->get_sink(renderer);
     g_assert(sink);
 
-    g_object_set(sink, "buffer-time", SINK_BUFFER_TIME,
-        "latency-time", G_GINT64_CONSTANT(10000), NULL);
+
+
+    g_object_set(sink, "buffer-time", G_GINT64_CONSTANT(200000),
+        "latency-time", G_GINT64_CONSTANT(20000), NULL);
+   GST_ERROR_OBJECT(source, "ABDELHAMID SETUP BUFFER TIME TO 200ms and Latency time to 20ms for Sink");
+   /* g_object_set(sink, "buffer-time", SINK_BUFFER_TIME,
+        "latency-time", G_GINT64_CONSTANT(10000), NULL);*/
 
     setup_sink_for_aec(sink);
 
