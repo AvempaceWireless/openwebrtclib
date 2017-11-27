@@ -553,7 +553,7 @@ static GstElement *owr_local_media_source_request_source(OwrMediaSource *media_s
 		/*latency-time : 10000*/
                 g_object_set(source, "buffer-time", G_GINT64_CONSTANT(40000),
                     "latency-time", G_GINT64_CONSTANT(10000), NULL);
-		GST_ERROR_OBJECT(source, "SETUP BUFFER TIME TO 40ms and Latency time to 10ms");
+		/*GST_ERROR_OBJECT(source, "SETUP BUFFER TIME TO 40ms and Latency time to 10ms");*/
 #endif
                 if (priv->device_index > -1) {
 #ifdef __APPLE__
