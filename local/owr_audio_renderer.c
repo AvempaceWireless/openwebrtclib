@@ -37,6 +37,7 @@
 #include "owr_media_renderer_private.h"
 #include "owr_private.h"
 #include "owr_utils.h"
+#include <gst/gst.h>
 
 GST_DEBUG_CATEGORY_EXTERN(_owraudiorenderer_debug);
 #define GST_CAT_DEFAULT _owraudiorenderer_debug
@@ -178,7 +179,7 @@ static GstElement *owr_audio_renderer_get_element(OwrMediaRenderer *renderer)
 
     g_object_set(sink, "buffer-time", G_GINT64_CONSTANT(200000),
         "latency-time", G_GINT64_CONSTANT(20000), NULL);
-   GST_ERROR_OBJECT(source, "ABDELHAMID SETUP BUFFER TIME TO 200ms and Latency time to 20ms for Sink");
+   GST_ERROR_OBJECT(sink, "ABDELHAMID SETUP BUFFER TIME TO 200ms and Latency time to 20ms for Sink");
    /* g_object_set(sink, "buffer-time", SINK_BUFFER_TIME,
         "latency-time", G_GINT64_CONSTANT(10000), NULL);*/
 
