@@ -831,7 +831,7 @@ int callback_ice_failed(void)
 {
     jobject obj;
     JNIEnv *env;
-	//jclass  clz;
+	jclass  clz;
 	LOGI("-----> callback_ice_failed - %s", "CALLED");
 	
     (*jvm)->AttachCurrentThread(jvm,&env, NULL);
