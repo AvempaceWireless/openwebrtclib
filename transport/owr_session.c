@@ -160,8 +160,8 @@ JNIEXPORT jint JNICALL Java_com_ericsson_research_owr_sdk_JniHandler_initJni(JNI
 	LOGI("JniHandler_init - %s", "Abdelhamid : Find Class JniHandler");
 
     int status = (*env)->GetJavaVM(env, &jvm);
-	g_ctx.javaVM = (*env)->NewGlobalRef(env,jvm);
-	LOGI("JniHandler_init - %s", "Abdelhamid : Save jvm to javaVM");
+	//g_ctx.javaVM = (*env)->NewGlobalRef(env,jvm);
+	LOGI("JniHandler_init - %s", "Abdelhamid : GetJavaVM and save it to jvm");
 	
    // g_ctx.jniHelperObj = jObj;
     g_ctx.jniHelperObj = (*env)->NewGlobalRef(env,jObj);
@@ -175,7 +175,7 @@ JNIEXPORT jint JNICALL Java_com_ericsson_research_owr_sdk_JniHandler_initJni(JNI
     LOGE("JniHandler_init FAIL GetJavaVM- %s", "CALLED");
     }
 
-    LOGI("JniHandler_init - %s", "CALLED");
+    LOGI("JniHandler_init SUCCESS - %s", "CALLED");
 
     return  JNI_VERSION_1_6;
 }
@@ -834,7 +834,7 @@ int callback_ice_failed(void)
 	jclass  clz;
 	LOGI("-----> callback_ice_failed - %s", "CALLED");
 	
-    (*g_ctx.javaVM)->AttachCurrentThread(g_ctx.javaVM,&env, NULL);
+    (*jvm)->AttachCurrentThread(jvm,(void **)&env, NULL);
 	LOGI("----->callback_ice_failed - %s", "Abdelhamid AttachCurrentThread");
     obj = g_ctx.jniHelperObj;
 	LOGI("----->callback_ice_failed - %s", "Abdelhamid Get jniHelperObj");
