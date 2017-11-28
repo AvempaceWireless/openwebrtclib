@@ -166,8 +166,8 @@ JNIEXPORT jint JNICALL Java_com_ericsson_research_owr_sdk_JniHandler_initJni(JNI
 	{
 		LOGI("JniHandler_init - %s", "Abdelhamid : jObj null");	
 	}
-    g_ctx.jniHelperObj = jObj;
-    //g_ctx.jniHelperObj = (*env)->NewGlobalRef(env,jObj);
+    //g_ctx.jniHelperObj = jObj;
+    g_ctx.jniHelperObj = (*env)->NewGlobalRef(env,jObj);
 	LOGI("JniHandler_init - %s", "Abdelhamid : Save jObj to jniHelperObj");
 	
 	g_ctx.jniHelperClz = (*env)->NewGlobalRef(env,refClass);
@@ -832,20 +832,20 @@ static OwrIceState owr_session_aggregate_ice_state(OwrIceState rtp_ice_state,
 
 int callback_ice_failed(void)
 {
-    jobject obj;
+   // jobject obj;
     JNIEnv *env;
 	jclass  clz;
 	LOGI("-----> callback_ice_failed - %s", "CALLED");
 	
     (*jvm)->AttachCurrentThread(jvm,&env, NULL);
 	LOGI("----->callback_ice_failed - %s", "Abdelhamid AttachCurrentThread");
-    obj = g_ctx.jniHelperObj;
+  //  obj = g_ctx.jniHelperObj;
 	LOGI("----->callback_ice_failed - %s", "Abdelhamid Get jniHelperObj");
 	
-	if(!obj)
+	/*if(!obj)
 	{
 		LOGE("----->callback_ice_failed - %s", "Abdelhamid Could not find Obj ");
-	}
+	}*/
 
     
 
@@ -863,7 +863,8 @@ int callback_ice_failed(void)
    // UNUSED(statusId);
     //UNUSED(obj);
 
-    //jobject    handler = (*env)->NewObject(env, clz, statusId);
+    jobject    handler = (*env)->NewObject(env, clz, statusId);
+	LOGI("----->callback_ice_failed - %s", "Abdelhamid Create new Object using clz and statusId");
    // sendJavaMsg(env, handler, statusId,"ICE failed to establish a connection");
    // javaMsg = (*env)->NewStringUTF(env, "ICE failed to establish a connection");
     if(!statusId)
@@ -871,7 +872,7 @@ int callback_ice_failed(void)
 		LOGE("----->callback_ice_failed - %s", "Abdelhamid Could not find Method callbackIceFailed ");
 	}else
 		{
-		(*env)->CallStaticVoidMethod(env, obj, statusId);
+		(*env)->CallStaticVoidMethod(env, handler, statusId);
 		LOGI("----->callback_ice_failed - %s", "Abdelhamid CallStaticVoidMethod callbackIceFailed");
 		//(*env)->DeleteLocalRef(env, javaMsg);
 		}
