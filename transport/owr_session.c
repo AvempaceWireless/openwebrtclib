@@ -834,7 +834,7 @@ int callback_ice_failed(void)
 	jclass  clz;
 	LOGI("-----> callback_ice_failed - %s", "CALLED");
 	
-    (*jvm)->AttachCurrentThread(jvm,(void **)&env, NULL);
+    (*jvm)->AttachCurrentThread(jvm,&env, NULL);
 	LOGI("----->callback_ice_failed - %s", "Abdelhamid AttachCurrentThread");
     obj = g_ctx.jniHelperObj;
 	LOGI("----->callback_ice_failed - %s", "Abdelhamid Get jniHelperObj");
