@@ -859,11 +859,13 @@ int callback_ice_failed(void)
    
     jmethodID statusId = (*env)->GetStaticMethodID(env, clz,"callbackIceFailed", "()V");
 	LOGI("----->callback_ice_failed - %s", "Abdelhamid GetStaticMethodID callbackIceFailed");
+	
+	jmethodID constId = (*env)->GetMethodID(env, clz,"JniHandler", "()");
 
    // UNUSED(statusId);
     //UNUSED(obj);
 
-    jobject    handler = (*env)->NewObject(env, clz, statusId);
+    jobject    handler = (*env)->NewObject(env, clz, constId);
 	LOGI("----->callback_ice_failed - %s", "Abdelhamid Create new Object using clz and statusId");
    // sendJavaMsg(env, handler, statusId,"ICE failed to establish a connection");
    // javaMsg = (*env)->NewStringUTF(env, "ICE failed to establish a connection");
