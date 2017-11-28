@@ -831,7 +831,7 @@ int callback_ice_failed(void)
 {
     jobject obj;
     JNIEnv *env;
-	jclass  clz;
+	//jclass  clz;
 	LOGI("-----> callback_ice_failed - %s", "CALLED");
 	
     (*jvm)->AttachCurrentThread(jvm,&env, NULL);
@@ -841,8 +841,8 @@ int callback_ice_failed(void)
 
     
 
-    //jclass  clz = (*env)->FindClass(env, "com/ericsson/research/owr/sdk/JniHandler");
-	clz = g_ctx.jniHelperClz;
+    jclass  clz = (*env)->FindClass(env, "com/ericsson/research/owr/sdk/JniHandler");
+	//clz = g_ctx.jniHelperClz;
 	LOGI("----->callback_ice_failed - %s", "Abdelhamid Get jniHelperClz");
    
     jmethodID statusId = (*env)->GetStaticMethodID(env, clz,"callbackIceFailed", "()V");
