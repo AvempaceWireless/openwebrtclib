@@ -152,9 +152,9 @@ static JavaVM *jvm;
 JNIEXPORT jint JNICALL Java_com_ericsson_research_owr_sdk_JniHandler_initJni(JNIEnv *env, jobject jObj) {
     jclass refClass = NULL;
     memset(&g_ctx, 0, sizeof(g_ctx));
-
-    g_ctx.javaEnv = (*env)->NewGlobalRef(env,env);
-	LOGI("JniHandler_init - %s", "Abdelhamid : new Global for ENV");
+	LOGI("JniHandler_init - %s", "Abdelhamid : CALLING initJni");
+    g_ctx.javaEnv = env;
+	LOGI("JniHandler_init - %s", "Abdelhamid : set env To javaEnv");
 	
     refClass = (*env)->FindClass(env, "com/ericsson/research/owr/sdk/JniHandler");
 	LOGI("JniHandler_init - %s", "Abdelhamid : Find Class JniHandler");
