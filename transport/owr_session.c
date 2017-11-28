@@ -136,6 +136,7 @@ typedef struct tick_context {
 } TickContext;
 TickContext g_ctx;
 
+
 static JavaVM *jvm;
 /*
  * processing one time initialization:
@@ -149,14 +150,26 @@ static JavaVM *jvm;
  *     the pairing function JNI_OnUnload() never gets called at all.
  */
 JNIEXPORT jint JNICALL Java_com_ericsson_research_owr_sdk_JniHandler_initJni(JNIEnv *env, jobject jObj) {
-    
+    jclass refClass = NULL;
     memset(&g_ctx, 0, sizeof(g_ctx));
 
-    g_ctx.javaEnv = env;
-    
+    g_ctx.javaEnv = (*env)->NewGlobalRef(env,env);
+	LOGI("JniHandler_init - %s", "Abdelhamid : new Global for ENV");
+	
+    refClass = (*env)->FindClass(env, "com/ericsson/research/owr/sdk/JniHandler");
+	LOGI("JniHandler_init - %s", "Abdelhamid : Find Class JniHandler");
 
     int status = (*env)->GetJavaVM(env, &jvm);
-    g_ctx.jniHelperObj = jObj;
+	g_ctx.javaVM = (*env)->NewGlobalRef(env,jvm);
+	LOGI("JniHandler_init - %s", "Abdelhamid : Save jvm to javaVM");
+	
+   // g_ctx.jniHelperObj = jObj;
+    g_ctx.jniHelperObj = (*env)->NewGlobalRef(env,jObj);
+	LOGI("JniHandler_init - %s", "Abdelhamid : Save jObj to jniHelperObj");
+	
+	g_ctx.jniHelperClz = (*env)->NewGlobalRef(env,refClass);
+	LOGI("JniHandler_init - %s", "Abdelhamid : Save refClass to jniHelperClz");
+	
     if(status != 0) {
         // Fail!
     LOGE("JniHandler_init FAIL GetJavaVM- %s", "CALLED");
@@ -816,17 +829,24 @@ static OwrIceState owr_session_aggregate_ice_state(OwrIceState rtp_ice_state,
 
 int callback_ice_failed(void)
 {
-   // jobject obj;
-   // JNIEnv *env;
-   // (*jvm)->AttachCurrentThread(jvm,&env, NULL);
+    jobject obj;
+    JNIEnv *env;
+	jclass  clz;
+	LOGI("-----> callback_ice_failed - %s", "CALLED");
+	
+    (*g_ctx.javaVM)->AttachCurrentThread(g_ctx.javaVM,&env, NULL);
+	LOGI("----->callback_ice_failed - %s", "Abdelhamid AttachCurrentThread");
+    obj = g_ctx.jniHelperObj;
+	LOGI("----->callback_ice_failed - %s", "Abdelhamid Get jniHelperObj");
 
-   // obj = g_ctx.jniHelperObj;
-
-    LOGI("-----> callback_ice_failed - %s", "CALLED");
+    
 
     //jclass  clz = (*env)->FindClass(env, "com/ericsson/research/owr/sdk/JniHandler");
+	clz = g_ctx.jniHelperClz;
+	LOGI("----->callback_ice_failed - %s", "Abdelhamid Get jniHelperClz");
    
-    //jmethodID statusId = (*env)->GetStaticMethodID(env, clz,"callbackIceFailed", "()V");
+    jmethodID statusId = (*env)->GetStaticMethodID(env, clz,"callbackIceFailed", "()V");
+	LOGI("----->callback_ice_failed - %s", "Abdelhamid GetStaticMethodID callbackIceFailed");
 
    // UNUSED(statusId);
     //UNUSED(obj);
@@ -835,7 +855,8 @@ int callback_ice_failed(void)
    // sendJavaMsg(env, handler, statusId,"ICE failed to establish a connection");
    // javaMsg = (*env)->NewStringUTF(env, "ICE failed to establish a connection");
     
-    //(*env)->CallStaticVoidMethod(env, obj, statusId);
+    (*env)->CallStaticVoidMethod(env, obj, statusId);
+	LOGI("----->callback_ice_failed - %s", "Abdelhamid CallStaticVoidMethod callbackIceFailed");
     //(*env)->DeleteLocalRef(env, javaMsg);
 
 
