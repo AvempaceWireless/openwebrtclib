@@ -841,9 +841,13 @@ int callback_ice_failed(void)
 
     
 
-    jclass  clz = (*env)->FindClass(env, "com/ericsson/research/owr/sdk/JniHandler");
-	//clz = g_ctx.jniHelperClz;
+    //jclass  clz = (*env)->FindClass(env, "com/ericsson/research/owr/sdk/JniHandler");
+	clz = g_ctx.jniHelperClz;
 	LOGI("----->callback_ice_failed - %s", "Abdelhamid Get jniHelperClz");
+	if(!clz)
+	{
+		LOGE("----->callback_ice_failed - %s", "Abdelhamid Could not find JniHandler Class ");
+	}else{
    
     jmethodID statusId = (*env)->GetStaticMethodID(env, clz,"callbackIceFailed", "()V");
 	LOGI("----->callback_ice_failed - %s", "Abdelhamid GetStaticMethodID callbackIceFailed");
@@ -854,10 +858,16 @@ int callback_ice_failed(void)
     //jobject    handler = (*env)->NewObject(env, clz, statusId);
    // sendJavaMsg(env, handler, statusId,"ICE failed to establish a connection");
    // javaMsg = (*env)->NewStringUTF(env, "ICE failed to establish a connection");
-    
-    (*env)->CallStaticVoidMethod(env, obj, statusId);
-	LOGI("----->callback_ice_failed - %s", "Abdelhamid CallStaticVoidMethod callbackIceFailed");
-    //(*env)->DeleteLocalRef(env, javaMsg);
+    if(!statusId)
+	{
+		LOGE("----->callback_ice_failed - %s", "Abdelhamid Could not find Method callbackIceFailed ");
+	}else
+		{
+		(*env)->CallStaticVoidMethod(env, obj, statusId);
+		LOGI("----->callback_ice_failed - %s", "Abdelhamid CallStaticVoidMethod callbackIceFailed");
+		//(*env)->DeleteLocalRef(env, javaMsg);
+		}
+	}
 
 
     return 1;
