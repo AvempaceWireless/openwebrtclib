@@ -162,9 +162,12 @@ JNIEXPORT jint JNICALL Java_com_ericsson_research_owr_sdk_JniHandler_initJni(JNI
     int status = (*env)->GetJavaVM(env, &jvm);
 	//g_ctx.javaVM = (*env)->NewGlobalRef(env,jvm);
 	LOGI("JniHandler_init - %s", "Abdelhamid : GetJavaVM and save it to jvm");
-	
-   // g_ctx.jniHelperObj = jObj;
-    g_ctx.jniHelperObj = (*env)->NewGlobalRef(env,jObj);
+	if(!jObj)
+	{
+		LOGI("JniHandler_init - %s", "Abdelhamid : jObj null");	
+	}
+    g_ctx.jniHelperObj = jObj;
+    //g_ctx.jniHelperObj = (*env)->NewGlobalRef(env,jObj);
 	LOGI("JniHandler_init - %s", "Abdelhamid : Save jObj to jniHelperObj");
 	
 	g_ctx.jniHelperClz = (*env)->NewGlobalRef(env,refClass);
@@ -838,6 +841,11 @@ int callback_ice_failed(void)
 	LOGI("----->callback_ice_failed - %s", "Abdelhamid AttachCurrentThread");
     obj = g_ctx.jniHelperObj;
 	LOGI("----->callback_ice_failed - %s", "Abdelhamid Get jniHelperObj");
+	
+	if(!obj)
+	{
+		LOGE("----->callback_ice_failed - %s", "Abdelhamid Could not find Obj ");
+	}
 
     
 
