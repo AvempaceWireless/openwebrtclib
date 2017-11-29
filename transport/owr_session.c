@@ -180,7 +180,7 @@ JNIEXPORT jint JNICALL Java_com_ericsson_research_owr_sdk_JniHandler_initJni(JNI
 
     LOGI("JniHandler_init SUCCESS - %s", "CALLED");
 	
-	jmethodID theMethodId = (*env)->GetStaticMethodID(env, clz,"callbackIceFailed", "()V");
+	jmethodID theMethodId = (*env)->GetStaticMethodID(env, refClass,"callbackIceFailed", "()V");
 	
 	 LOGE("JniHandler_init SUCCESS - %s", "Abdelhamid GetStaticMethodID");
 	
