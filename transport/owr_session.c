@@ -149,14 +149,14 @@ static JavaVM *jvm;
  *     we rely on system to free all global refs when it goes away;
  *     the pairing function JNI_OnUnload() never gets called at all.
  */
-JNIEXPORT jint JNICALL Java_com_ericsson_research_owr_sdk_JniHandler_initJni(JNIEnv *env, jobject jObj) {
-    jclass refClass = NULL;
+JNIEXPORT void JNICALL Java_com_ericsson_research_owr_sdk_JniHandler_initJniVizia(JNIEnv *env, jobject jObj) {
+    
     memset(&g_ctx, 0, sizeof(g_ctx));
 	LOGI("JniHandler_init - %s", "Abdelhamid : CALLING initJni");
     g_ctx.javaEnv = env;
 	LOGI("JniHandler_init - %s", "Abdelhamid : set env To javaEnv");
 	
-    refClass = (*env)->FindClass(env, "com/ericsson/research/owr/sdk/JniHandler");
+    jclass refClass = (*env)->FindClass(env, "com/ericsson/research/owr/sdk/JniHandler");
 	LOGI("JniHandler_init - %s", "Abdelhamid : Find Class JniHandler");
 
     int status = (*env)->GetJavaVM(env, &jvm);
@@ -187,7 +187,7 @@ JNIEXPORT jint JNICALL Java_com_ericsson_research_owr_sdk_JniHandler_initJni(JNI
 	(*env)->CallStaticVoidMethod(env, jObj, theMethodId);
 	LOGI("----->callback_ice_failed - %s", "Abdelhamid CallStaticVoidMethod callbackIceFailed");
 
-    return  JNI_VERSION_1_6;
+    //return  JNI_VERSION_1_6;
 }
 
 
