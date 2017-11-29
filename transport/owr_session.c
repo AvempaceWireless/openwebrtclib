@@ -160,13 +160,13 @@ JNIEXPORT void JNICALL Java_com_ericsson_research_owr_sdk_JniHandler_initJniVizi
 	LOGI("JniHandler_init - %s", "Abdelhamid : Find Class JniHandler");
 
     int status = (*env)->GetJavaVM(env, &jvm);
-	//g_ctx.javaVM = (*env)->NewGlobalRef(env,jvm);
+	
 	LOGI("JniHandler_init - %s", "Abdelhamid : GetJavaVM and save it to jvm");
 	if(!jObj)
 	{
 		LOGI("JniHandler_init - %s", "Abdelhamid : jObj null");	
 	}
-    //g_ctx.jniHelperObj = jObj;
+
     g_ctx.jniHelperObj = (*env)->NewGlobalRef(env,jObj);
 	LOGI("JniHandler_init - %s", "Abdelhamid : Save jObj to jniHelperObj");
 	
@@ -180,12 +180,12 @@ JNIEXPORT void JNICALL Java_com_ericsson_research_owr_sdk_JniHandler_initJniVizi
 
     LOGI("JniHandler_init SUCCESS - %s", "CALLED");
 	
-	jmethodID theMethodId = (*env)->GetStaticMethodID(env, refClass,"callbackIceFailed", "()V");
+	//jmethodID theMethodId = (*env)->GetStaticMethodID(env, refClass,"callbackIceFailed", "()V");
 	
-	 LOGE("JniHandler_init SUCCESS - %s", "Abdelhamid GetStaticMethodID");
+	// LOGE("JniHandler_init SUCCESS - %s", "Abdelhamid GetStaticMethodID");
 	
-	(*env)->CallStaticVoidMethod(env, jObj, theMethodId);
-	LOGI("----->callback_ice_failed - %s", "Abdelhamid CallStaticVoidMethod callbackIceFailed");
+	//(*env)->CallStaticVoidMethod(env, jObj, theMethodId);
+	//LOGI("----->callback_ice_failed - %s", "Abdelhamid CallStaticVoidMethod callbackIceFailed");
 
     //return  JNI_VERSION_1_6;
 }
@@ -839,38 +839,32 @@ static OwrIceState owr_session_aggregate_ice_state(OwrIceState rtp_ice_state,
 
 int callback_ice_failed(void)
 {
-    jobject obj;
+    jobject theObj;
     JNIEnv *env;
 	jclass  clz;
 	LOGI("-----> callback_ice_failed - %s", "CALLED");
 	
     (*jvm)->AttachCurrentThread(jvm,&env, NULL);
 	LOGI("----->callback_ice_failed - %s", "Abdelhamid AttachCurrentThread");
-    obj = g_ctx.jniHelperObj;
+    theObj = g_ctx.jniHelperObj;
 	LOGI("----->callback_ice_failed - %s", "Abdelhamid Get jniHelperObj");
 	
-	if(!obj)
+	if(!theObj)
 	{
 		LOGE("----->callback_ice_failed - %s", "Abdelhamid Could not find Obj ");
+		return 1;
 	}
 
-    
-
-    //jclass  clz = (*env)->FindClass(env, "com/ericsson/research/owr/sdk/JniHandler");
 	clz = g_ctx.jniHelperClz;
 	LOGI("----->callback_ice_failed - %s", "Abdelhamid Get jniHelperClz");
 	if(!clz)
 	{
 		LOGE("----->callback_ice_failed - %s", "Abdelhamid Could not find JniHandler Class ");
+		return 1;
 	}else{
    
     jmethodID statusId = (*env)->GetStaticMethodID(env, clz,"callbackIceFailed", "()V");
 	LOGI("----->callback_ice_failed - %s", "Abdelhamid GetStaticMethodID callbackIceFailed");
-	
-	//jmethodID constId = (*env)->GetStaticMethodID(env, clz,"JniHandler", "()");
-
-   // UNUSED(statusId);
-    //UNUSED(obj);
 
     //jobject    handler = (*env)->NewObject(env, clz, constId);
 	//LOGI("----->callback_ice_failed - %s", "Abdelhamid Create new Object using clz and statusId");
@@ -881,7 +875,7 @@ int callback_ice_failed(void)
 		LOGE("----->callback_ice_failed - %s", "Abdelhamid Could not find Method callbackIceFailed ");
 	}else
 		{
-		(*env)->CallStaticVoidMethod(env, obj, statusId);
+		(*env)->CallStaticVoidMethod(env, theObj, statusId);
 		LOGI("----->callback_ice_failed - %s", "Abdelhamid CallStaticVoidMethod callbackIceFailed");
 		//(*env)->DeleteLocalRef(env, javaMsg);
 		}
@@ -890,6 +884,132 @@ int callback_ice_failed(void)
 
     return 1;
 
+}
+
+void callback_ice_state_other(void)
+{
+	jobject theObj;
+    JNIEnv *env;
+	jclass  clz;
+	LOGI("-----> callback_ice_state_other - %s", "CALLED");
+	
+    (*jvm)->AttachCurrentThread(jvm,&env, NULL);
+	LOGI("----->callback_ice_state_other - %s", "Abdelhamid AttachCurrentThread");
+    theObj = g_ctx.jniHelperObj;
+	LOGI("----->callback_ice_state_other - %s", "Abdelhamid Get jniHelperObj");
+	
+	if(!theObj)
+	{
+		LOGE("----->callback_ice_state_other - %s", "Abdelhamid Could not find Obj ");
+		return;
+	}
+
+	clz = g_ctx.jniHelperClz;
+	LOGI("----->callback_ice_state_other - %s", "Abdelhamid Get jniHelperClz");
+	if(!clz)
+	{
+		LOGE("----->callback_ice_state_other - %s", "Abdelhamid Could not find JniHandler Class ");
+		return;
+	}else{
+   
+    jmethodID statusId = (*env)->GetStaticMethodID(env, clz,"callbackIceStateOther", "()V");
+	LOGI("----->callback_ice_state_other - %s", "Abdelhamid GetStaticMethodID callbackIceStateReady");
+
+    if(!statusId)
+	{
+		LOGE("----->callback_ice_state_other - %s", "Abdelhamid Could not find Method callbackIceStateReady ");
+	}else
+		{
+		(*env)->CallStaticVoidMethod(env, theObj, statusId);
+		LOGI("----->callback_ice_state_other - %s", "Abdelhamid CallStaticVoidMethod callbackIceStateReady");
+		
+		}
+	}
+	
+}
+
+void callback_ice_state_connected(void)
+{
+	jobject theObj;
+    JNIEnv *env;
+	jclass  clz;
+	LOGI("-----> callback_ice_state_connected - %s", "CALLED");
+	
+    (*jvm)->AttachCurrentThread(jvm,&env, NULL);
+	LOGI("----->callback_ice_state_connected - %s", "Abdelhamid AttachCurrentThread");
+    theObj = g_ctx.jniHelperObj;
+	LOGI("----->callback_ice_state_connected - %s", "Abdelhamid Get jniHelperObj");
+	
+	if(!theObj)
+	{
+		LOGE("----->callback_ice_state_connected - %s", "Abdelhamid Could not find Obj ");
+		return;
+	}
+
+	clz = g_ctx.jniHelperClz;
+	LOGI("----->callback_ice_state_connected - %s", "Abdelhamid Get jniHelperClz");
+	if(!clz)
+	{
+		LOGE("----->callback_ice_state_connected - %s", "Abdelhamid Could not find JniHandler Class ");
+		return;
+	}else{
+   
+    jmethodID statusId = (*env)->GetStaticMethodID(env, clz,"callbackIceStateConnected", "()V");
+	LOGI("----->callback_ice_state_connected - %s", "Abdelhamid GetStaticMethodID callbackIceStateReady");
+
+    if(!statusId)
+	{
+		LOGE("----->callback_ice_state_connected - %s", "Abdelhamid Could not find Method callbackIceStateReady ");
+	}else
+		{
+		(*env)->CallStaticVoidMethod(env, theObj, statusId);
+		LOGI("----->callback_ice_state_connected - %s", "Abdelhamid CallStaticVoidMethod callbackIceStateReady");
+		
+		}
+	}
+	
+}
+
+void callback_ice_state_ready(void)
+{
+	jobject theObj;
+    JNIEnv *env;
+	jclass  clz;
+	LOGI("-----> callback_ice_state_ready - %s", "CALLED");
+	
+    (*jvm)->AttachCurrentThread(jvm,&env, NULL);
+	LOGI("----->callback_ice_state_ready - %s", "Abdelhamid AttachCurrentThread");
+    theObj = g_ctx.jniHelperObj;
+	LOGI("----->callback_ice_state_ready - %s", "Abdelhamid Get jniHelperObj");
+	
+	if(!theObj)
+	{
+		LOGE("----->callback_ice_state_ready - %s", "Abdelhamid Could not find Obj ");
+		return;
+	}
+
+	clz = g_ctx.jniHelperClz;
+	LOGI("----->callback_ice_state_ready - %s", "Abdelhamid Get jniHelperClz");
+	if(!clz)
+	{
+		LOGE("----->callback_ice_state_ready - %s", "Abdelhamid Could not find JniHandler Class ");
+		return;
+	}else{
+   
+    jmethodID statusId = (*env)->GetStaticMethodID(env, clz,"callbackIceStateReady", "()V");
+	LOGI("----->callback_ice_state_ready - %s", "Abdelhamid GetStaticMethodID callbackIceStateReady");
+
+    if(!statusId)
+	{
+		LOGE("----->callback_ice_state_ready - %s", "Abdelhamid Could not find Method callbackIceStateReady ");
+	}else
+		{
+		(*env)->CallStaticVoidMethod(env, theObj, statusId);
+		LOGI("----->callback_ice_state_ready - %s", "Abdelhamid CallStaticVoidMethod callbackIceStateReady");
+		
+		}
+	}
+	
 }
 #endif
 
@@ -933,16 +1053,29 @@ void _owr_session_emit_ice_state_changed(OwrSession *session, guint session_id,
 #ifdef __ANDROID__
 	    callback_ice_failed();
 #endif
-
-	    
-
+ 
 
     } else if (new_state == OWR_ICE_STATE_CONNECTED || new_state == OWR_ICE_STATE_READY) {
         GST_INFO_OBJECT(session, "Session %u, ICE state changed from %s to %s",
             session_id, old_state_name, new_state_name);
+#ifdef __ANDROID__
+			if(new_state == OWR_ICE_STATE_CONNECTED)
+			{
+				callback_ice_state_connected();
+			}else
+			{
+				callback_ice_state_ready();
+			}
+#endif
     } else {
         GST_DEBUG_OBJECT(session, "Session %u, ICE state changed from %s to %s",
             session_id, old_state_name, new_state_name);
+			
+#ifdef __ANDROID__
+
+			callback_ice_state_other();
+				
+#endif
     }
     g_free(old_state_name);
     g_free(new_state_name);
