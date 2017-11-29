@@ -179,6 +179,13 @@ JNIEXPORT jint JNICALL Java_com_ericsson_research_owr_sdk_JniHandler_initJni(JNI
     }
 
     LOGI("JniHandler_init SUCCESS - %s", "CALLED");
+	
+	jmethodID theMethodId = (*env)->GetStaticMethodID(env, clz,"callbackIceFailed", "()V");
+	
+	 LOGE("JniHandler_init SUCCESS - %s", "Abdelhamid GetStaticMethodID");
+	
+	(*env)->CallStaticVoidMethod(env, jObj, theMethodId);
+	LOGI("----->callback_ice_failed - %s", "Abdelhamid CallStaticVoidMethod callbackIceFailed");
 
     return  JNI_VERSION_1_6;
 }
@@ -860,7 +867,7 @@ int callback_ice_failed(void)
     jmethodID statusId = (*env)->GetStaticMethodID(env, clz,"callbackIceFailed", "()V");
 	LOGI("----->callback_ice_failed - %s", "Abdelhamid GetStaticMethodID callbackIceFailed");
 	
-	jmethodID constId = (*env)->GetMethodID(env, clz,"JniHandler", "()");
+	jmethodID constId = (*env)->GetStaticMethodID(env, clz,"JniHandler", "()");
 
    // UNUSED(statusId);
     //UNUSED(obj);
