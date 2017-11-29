@@ -881,7 +881,7 @@ int callback_ice_failed(void)
 		LOGE("----->callback_ice_failed - %s", "Abdelhamid Could not find Method callbackIceFailed ");
 	}else
 		{
-		(*env)->CallStaticVoidMethod(env, handler, statusId);
+		(*env)->CallStaticVoidMethod(env, obj, statusId);
 		LOGI("----->callback_ice_failed - %s", "Abdelhamid CallStaticVoidMethod callbackIceFailed");
 		//(*env)->DeleteLocalRef(env, javaMsg);
 		}
