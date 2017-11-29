@@ -837,7 +837,7 @@ static OwrIceState owr_session_aggregate_ice_state(OwrIceState rtp_ice_state,
 #ifdef __ANDROID__
 
 
-int callback_ice_failed(void)
+int callback_ice_failed(guint session_id)
 {
     jobject theObj;
     JNIEnv *env;
@@ -863,7 +863,7 @@ int callback_ice_failed(void)
 		return 1;
 	}else{
    
-    jmethodID statusId = (*env)->GetStaticMethodID(env, clz,"callbackIceFailed", "()V");
+    jmethodID statusId = (*env)->GetStaticMethodID(env, clz,"callbackIceFailed", "(I)V");
 	LOGI("----->callback_ice_failed - %s", "Abdelhamid GetStaticMethodID callbackIceFailed");
 
     //jobject    handler = (*env)->NewObject(env, clz, constId);
@@ -875,7 +875,7 @@ int callback_ice_failed(void)
 		LOGE("----->callback_ice_failed - %s", "Abdelhamid Could not find Method callbackIceFailed ");
 	}else
 		{
-		(*env)->CallStaticVoidMethod(env, theObj, statusId);
+		(*env)->CallStaticVoidMethod(env, theObj, statusId,session_id);
 		LOGI("----->callback_ice_failed - %s", "Abdelhamid CallStaticVoidMethod callbackIceFailed");
 		//(*env)->DeleteLocalRef(env, javaMsg);
 		}
@@ -886,7 +886,7 @@ int callback_ice_failed(void)
 
 }
 
-void callback_ice_state_other(void)
+void callback_ice_state_other(guint session_id, gchar *new_state_name)
 {
 	jobject theObj;
     JNIEnv *env;
@@ -911,8 +911,8 @@ void callback_ice_state_other(void)
 		LOGE("----->callback_ice_state_other - %s", "Abdelhamid Could not find JniHandler Class ");
 		return;
 	}else{
-   
-    jmethodID statusId = (*env)->GetStaticMethodID(env, clz,"callbackIceStateOther", "()V");
+    jstring theIceStateString = (*env)->NewStringUTF(env, new_state_name);
+    jmethodID statusId = (*env)->GetStaticMethodID(env, clz,"callbackIceStateOther", "(Ljava/lang/String;I)V");
 	LOGI("----->callback_ice_state_other - %s", "Abdelhamid GetStaticMethodID callbackIceStateReady");
 
     if(!statusId)
@@ -920,7 +920,7 @@ void callback_ice_state_other(void)
 		LOGE("----->callback_ice_state_other - %s", "Abdelhamid Could not find Method callbackIceStateReady ");
 	}else
 		{
-		(*env)->CallStaticVoidMethod(env, theObj, statusId);
+		(*env)->CallStaticVoidMethod(env, theObj, statusId,theIceStateString,session_id);
 		LOGI("----->callback_ice_state_other - %s", "Abdelhamid CallStaticVoidMethod callbackIceStateReady");
 		
 		}
@@ -928,7 +928,7 @@ void callback_ice_state_other(void)
 	
 }
 
-void callback_ice_state_connected(void)
+void callback_ice_state_connected(guint session_id)
 {
 	jobject theObj;
     JNIEnv *env;
@@ -954,7 +954,7 @@ void callback_ice_state_connected(void)
 		return;
 	}else{
    
-    jmethodID statusId = (*env)->GetStaticMethodID(env, clz,"callbackIceStateConnected", "()V");
+    jmethodID statusId = (*env)->GetStaticMethodID(env, clz,"callbackIceStateConnected", "(I)V");
 	LOGI("----->callback_ice_state_connected - %s", "Abdelhamid GetStaticMethodID callbackIceStateReady");
 
     if(!statusId)
@@ -962,7 +962,7 @@ void callback_ice_state_connected(void)
 		LOGE("----->callback_ice_state_connected - %s", "Abdelhamid Could not find Method callbackIceStateReady ");
 	}else
 		{
-		(*env)->CallStaticVoidMethod(env, theObj, statusId);
+		(*env)->CallStaticVoidMethod(env, theObj, statusId, session_id);
 		LOGI("----->callback_ice_state_connected - %s", "Abdelhamid CallStaticVoidMethod callbackIceStateReady");
 		
 		}
@@ -970,7 +970,7 @@ void callback_ice_state_connected(void)
 	
 }
 
-void callback_ice_state_ready(void)
+void callback_ice_state_ready(guint session_id)
 {
 	jobject theObj;
     JNIEnv *env;
@@ -996,7 +996,7 @@ void callback_ice_state_ready(void)
 		return;
 	}else{
    
-    jmethodID statusId = (*env)->GetStaticMethodID(env, clz,"callbackIceStateReady", "()V");
+    jmethodID statusId = (*env)->GetStaticMethodID(env, clz,"callbackIceStateReady", "(I)V");
 	LOGI("----->callback_ice_state_ready - %s", "Abdelhamid GetStaticMethodID callbackIceStateReady");
 
     if(!statusId)
@@ -1004,7 +1004,7 @@ void callback_ice_state_ready(void)
 		LOGE("----->callback_ice_state_ready - %s", "Abdelhamid Could not find Method callbackIceStateReady ");
 	}else
 		{
-		(*env)->CallStaticVoidMethod(env, theObj, statusId);
+		(*env)->CallStaticVoidMethod(env, theObj, statusId, session_id);
 		LOGI("----->callback_ice_state_ready - %s", "Abdelhamid CallStaticVoidMethod callbackIceStateReady");
 		
 		}
@@ -1051,7 +1051,7 @@ void _owr_session_emit_ice_state_changed(OwrSession *session, guint session_id,
             "ICE state changed from %s to %s",
             session_id, old_state_name, new_state_name);
 #ifdef __ANDROID__
-	    callback_ice_failed();
+	    callback_ice_failed(session_id);
 #endif
  
 
@@ -1061,10 +1061,10 @@ void _owr_session_emit_ice_state_changed(OwrSession *session, guint session_id,
 #ifdef __ANDROID__
 			if(new_state == OWR_ICE_STATE_CONNECTED)
 			{
-				callback_ice_state_connected();
+				callback_ice_state_connected(session_id);
 			}else
 			{
-				callback_ice_state_ready();
+				callback_ice_state_ready(session_id);
 			}
 #endif
     } else {
@@ -1073,7 +1073,7 @@ void _owr_session_emit_ice_state_changed(OwrSession *session, guint session_id,
 			
 #ifdef __ANDROID__
 
-			callback_ice_state_other();
+			callback_ice_state_other(session_id, new_state_name);
 				
 #endif
     }
