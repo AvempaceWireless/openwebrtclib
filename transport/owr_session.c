@@ -191,6 +191,12 @@ JNIEXPORT void JNICALL Java_com_ericsson_research_owr_sdk_JniHandler_initJniVizi
 }
 
 
+JNIEXPORT guint JNICALL Java_com_ericsson_research_owr_sdk_JniHandler_getCustomSdkVersion(JNIEnv *env, jobject jObj) {
+LOGI("JniHandler_getCustomSdkVersion - %s", "10");
+return 10;
+}
+
+
 /*
  * A helper function to wrap java JniHelper::updateStatus(String msg)
  * JNI allow us to call this function via an instance even it is
