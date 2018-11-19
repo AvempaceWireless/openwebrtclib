@@ -191,9 +191,10 @@ JNIEXPORT void JNICALL Java_com_ericsson_research_owr_sdk_JniHandler_initJniVizi
 }
 
 
-JNIEXPORT guint JNICALL Java_com_ericsson_research_owr_sdk_JniHandler_getCustomSdkVersion(void) {
+JNIEXPORT gchar* JNICALL Java_com_ericsson_research_owr_sdk_JniHandler_getCustomSdkVersion(void) {
 LOGI("JniHandler_getCustomSdkVersion - %s", "10");
-return 10;
+gchar theVersion[8] = "V 0.0.1";
+return &theVersion;
 }
 
 

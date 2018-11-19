@@ -76,6 +76,10 @@
 
 #ifdef __ANDROID__
 #include <android/log.h>
+#include <assert.h>
+#include <dlfcn.h>
+#include <jni.h>
+#include <stdlib.h>
 #endif
 
 GST_DEBUG_CATEGORY_EXTERN(_owrtransportagent_debug);
@@ -85,17 +89,16 @@ GST_DEBUG_CATEGORY_EXTERN(_owrsession_debug);
 #define DEFAULT_ICE_CONTROLLING_MODE TRUE
 #define GST_RTCP_RTPFB_TYPE_SCREAM 18
 
-
 // Android log function wrappers
 #ifdef __ANDROID__
 
-static const char* kTAG = "hello-jniCallback";
+static const char *kTAG = "hello-jniCallback";
 #define LOGI(...) \
-  ((void)__android_log_print(ANDROID_LOG_INFO, kTAG, __VA_ARGS__))
+    ((void)__android_log_print(ANDROID_LOG_INFO, kTAG, __VA_ARGS__))
 #define LOGW(...) \
-  ((void)__android_log_print(ANDROID_LOG_WARN, kTAG, __VA_ARGS__))
+    ((void)__android_log_print(ANDROID_LOG_WARN, kTAG, __VA_ARGS__))
 #define LOGE(...) \
-  ((void)__android_log_print(ANDROID_LOG_ERROR, kTAG, __VA_ARGS__))
+    ((void)__android_log_print(ANDROID_LOG_ERROR, kTAG, __VA_ARGS__))
 
 #define UNUSED(x) (void)(x)
 #endif
@@ -111,6 +114,11 @@ static GParamSpec *obj_properties[N_PROPERTIES] = {
     NULL,
 };
 static guint next_transport_agent_id = 1;
+
+// Avempace Code
+static gboolean isForceRelay = FALSE;
+static gboolean isTcpDisabled = FALSE;
+/**********************/
 
 #define OWR_TRANSPORT_AGENT_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), OWR_TYPE_TRANSPORT_AGENT, OwrTransportAgentPrivate))
 
@@ -488,23 +496,37 @@ static void owr_transport_agent_init(OwrTransportAgent *transport_agent)
 #ifdef __ANDROID__
     LOGI("owr_transport_agent_init - %s", "Abdelhamid :DISABLE ICE-TCP");
 #endif
-    g_object_set(G_OBJECT(priv->nice_agent), "ice-tcp", FALSE, NULL);
+
+    if (isTcpDisabled)
+    {
+        g_object_set(G_OBJECT(priv->nice_agent), "ice-tcp", FALSE, NULL);
+    }else
+    {
+        g_object_set(G_OBJECT(priv->nice_agent), "ice-tcp", TRUE, NULL);
+    }
 
 #ifdef __ANDROID__
     LOGI("owr_transport_agent_init - %s", "Abdelhamid :FORCE-RELAY TRUE");
 #endif
-    g_object_set(G_OBJECT(priv->nice_agent), "force-relay", TRUE, NULL);
+
+    if (isForceRelay)
+    {
+        g_object_set(G_OBJECT(priv->nice_agent), "force-relay", TRUE, NULL);
+    }
+    else{
+        g_object_set(G_OBJECT(priv->nice_agent), "force-relay", FALSE, NULL);
+    }
 
     /************************/
-        
+
     g_signal_connect(G_OBJECT(priv->nice_agent), "new-candidate-full",
-        G_CALLBACK(on_new_candidate), transport_agent);
+                     G_CALLBACK(on_new_candidate), transport_agent);
     g_signal_connect(G_OBJECT(priv->nice_agent), "candidate-gathering-done",
-        G_CALLBACK(on_candidate_gathering_done), transport_agent);
+                     G_CALLBACK(on_candidate_gathering_done), transport_agent);
     g_signal_connect(G_OBJECT(priv->nice_agent), "component-state-changed",
-        G_CALLBACK(on_component_state_changed), transport_agent);
+                     G_CALLBACK(on_component_state_changed), transport_agent);
     g_signal_connect(G_OBJECT(priv->nice_agent), "new-selected-pair-full",
-        G_CALLBACK(on_new_selected_pair), transport_agent);
+                     G_CALLBACK(on_new_selected_pair), transport_agent);
 
     pipeline_name = g_strdup_printf("transport-agent-%u", priv->agent_id);
     priv->pipeline = gst_pipeline_new(pipeline_name);
@@ -519,7 +541,7 @@ static void owr_transport_agent_init(OwrTransportAgent *transport_agent)
 
     bus = gst_pipeline_get_bus(GST_PIPELINE(priv->pipeline));
     bus_source = gst_bus_create_watch(bus);
-    g_source_set_callback(bus_source, (GSourceFunc) bus_call, transport_agent, NULL);
+    g_source_set_callback(bus_source, (GSourceFunc)bus_call, transport_agent, NULL);
     g_source_attach(bus_source, _owr_get_main_context());
     g_source_unref(bus_source);
 
@@ -602,8 +624,12 @@ static void owr_transport_agent_get_property(GObject *object, guint property_id,
     }
 }
 
-OwrTransportAgent *owr_transport_agent_new(gboolean ice_controlling_mode)
+OwrTransportAgent *owr_transport_agent_new(gboolean ice_controlling_mode, gboolean enableForceRelay, gboolean disableTcp)
 {
+    // Avempace Code
+    isForceRelay = enableForceRelay;
+    isTcpDisabled = disableTcp;
+    /*************************/
     return g_object_new(OWR_TYPE_TRANSPORT_AGENT, "ice-controlling_mode", ice_controlling_mode,
                         NULL);
 }
