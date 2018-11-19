@@ -488,12 +488,12 @@ static void owr_transport_agent_init(OwrTransportAgent *transport_agent)
 #ifdef __ANDROID__
     LOGI("owr_transport_agent_init - %s", "Abdelhamid :DISABLE ICE-TCP");
 #endif
-    g_object_set(G_OBJECT(priv->nice_agent, "ice-tcp", FALSE, NULL);
+    g_object_set(G_OBJECT(priv->nice_agent), "ice-tcp", FALSE, NULL);
 
 #ifdef __ANDROID__
     LOGI("owr_transport_agent_init - %s", "Abdelhamid :FORCE-RELAY TRUE");
 #endif
-    g_object_set(G_OBJECT(priv->nice_agent, "force-relay", TRUE, NULL);
+    g_object_set(G_OBJECT(priv->nice_agent), "force-relay", TRUE, NULL);
 
     /************************/
         
