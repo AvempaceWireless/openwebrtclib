@@ -113,7 +113,7 @@ enum {
 
 // Android log function wrappers
 #ifdef __ANDROID__
-static gchar* theVersion[8] = "V 1.0.1";
+static const char* theVersion = "V 1.0.1";
 static const char* kTAG = "hello-jniCallback";
 #define LOGI(...) \
   ((void)__android_log_print(ANDROID_LOG_INFO, kTAG, __VA_ARGS__))
@@ -191,7 +191,7 @@ JNIEXPORT void JNICALL Java_com_ericsson_research_owr_sdk_JniHandler_initJniVizi
 }
 
 
-JNIEXPORT gchar* JNICALL Java_com_ericsson_research_owr_sdk_JniHandler_getCustomSdkVersion(void) {
+JNIEXPORT char* JNICALL Java_com_ericsson_research_owr_sdk_JniHandler_getCustomSdkVersion(void) {
 LOGI("JniHandler_getCustomSdkVersion - %s", "getVesrsion");
 
 return theVersion;
