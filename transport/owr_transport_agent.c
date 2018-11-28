@@ -201,19 +201,19 @@ int callback_selected_local_candidate(NiceCandidate *rcandidate)
         else
         {
 
-            if (&rcandidate->type == NICE_CANDIDATE_TYPE_HOST)
+            if (rcandidate->type == NICE_CANDIDATE_TYPE_HOST)
             {
                 theCandidateType = 0;
             }
-            else if (&rcandidate->type == NICE_CANDIDATE_TYPE_SERVER_REFLEXIVE)
+            else if (rcandidate->type == NICE_CANDIDATE_TYPE_SERVER_REFLEXIVE)
             {
                 theCandidateType = 1;
             }
-            else if (&rcandidate->type == NICE_CANDIDATE_TYPE_PEER_REFLEXIVE)
+            else if (rcandidate->type == NICE_CANDIDATE_TYPE_PEER_REFLEXIVE)
             {
                 theCandidateType = 2;
             }
-            else if (&rcandidate->type == NICE_CANDIDATE_TYPE_RELAYED)
+            else if (rcandidate->type == NICE_CANDIDATE_TYPE_RELAYED)
             {
                 theCandidateType = 3;
             }
@@ -269,19 +269,19 @@ int callback_selected_remote_candidate(NiceCandidate *lcandidate)
         else
         {
 
-            if (&lcandidate->type == NICE_CANDIDATE_TYPE_HOST)
+            if (lcandidate->type == NICE_CANDIDATE_TYPE_HOST)
             {
                 theCandidateType = 0;
             }
-            else if (&lcandidate->type == NICE_CANDIDATE_TYPE_SERVER_REFLEXIVE)
+            else if (lcandidate->type == NICE_CANDIDATE_TYPE_SERVER_REFLEXIVE)
             {
                 theCandidateType = 1;
             }
-            else if (&lcandidate->type == NICE_CANDIDATE_TYPE_PEER_REFLEXIVE)
+            else if (lcandidate->type == NICE_CANDIDATE_TYPE_PEER_REFLEXIVE)
             {
                 theCandidateType = 2;
             }
-            else if (&lcandidate->type == NICE_CANDIDATE_TYPE_RELAYED)
+            else if (lcandidate->type == NICE_CANDIDATE_TYPE_RELAYED)
             {
                 theCandidateType = 3;
             }
