@@ -2340,8 +2340,8 @@ static void on_new_selected_pair(NiceAgent *nice_agent,
     OWR_UNUSED(nice_agent);
    
 #ifdef __ANDROID__
-    callback_selected_remote_candidate(&rcandidate); 
-    callback_selected_local_candidate(&lcandidate); 
+    callback_selected_remote_candidate(rcandidate); 
+    callback_selected_local_candidate(lcandidate); 
 #else 
     OWR_UNUSED(lcandidate);
     OWR_UNUSED(rcandidate);
