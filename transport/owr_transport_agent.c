@@ -164,7 +164,7 @@ JNIEXPORT void JNICALL Java_com_ericsson_research_owr_sdk_JniHandlerTransportAge
 
 
 
-int callback_selected_local_candidate(NiceCandidateType aCandidateType)
+int callback_selected_local_candidate(NiceCandidate *rcandidate)
 {
     jobject theObj;
     JNIEnv *env;
@@ -200,7 +200,7 @@ int callback_selected_local_candidate(NiceCandidateType aCandidateType)
 	}else
 		{
 
-          switch(aCandidateType){
+          switch(&rcandidate->type){
             case NICE_CANDIDATE_TYPE_HOST:
             theCandidateType = 0;
             break;
@@ -213,7 +213,7 @@ int callback_selected_local_candidate(NiceCandidateType aCandidateType)
             case NICE_CANDIDATE_TYPE_RELAYED:
              theCandidateType = 3;
             break;
-            default NICE_CANDIDATE_TYPE_HOST:
+            default:
              theCandidateType = 4;
             break;
         }
@@ -231,7 +231,7 @@ int callback_selected_local_candidate(NiceCandidateType aCandidateType)
 
 
 
-int callback_selected_remote_candidate(NiceCandidateType aCandidateType)
+int callback_selected_remote_candidate(NiceCandidate *lcandidate)
 {
     jobject theObj;
     JNIEnv *env;
@@ -268,7 +268,7 @@ int callback_selected_remote_candidate(NiceCandidateType aCandidateType)
 		{
 
 
-        switch(aCandidateType){
+        switch(&lcandidate->type){
             case NICE_CANDIDATE_TYPE_HOST:
             theCandidateType = 0;
             break;
@@ -281,7 +281,7 @@ int callback_selected_remote_candidate(NiceCandidateType aCandidateType)
             case NICE_CANDIDATE_TYPE_RELAYED:
              theCandidateType = 3;
             break;
-            default NICE_CANDIDATE_TYPE_HOST:
+            default:
              theCandidateType = 4;
             break;
         }
@@ -2340,8 +2340,8 @@ static void on_new_selected_pair(NiceAgent *nice_agent,
     OWR_UNUSED(nice_agent);
    
 #ifdef __ANDROID__
-    callback_selected_remote_candidate(&rcandidate->type); 
-    callback_selected_local_candidate(&lcandidate->type); 
+    callback_selected_remote_candidate(&rcandidate); 
+    callback_selected_local_candidate(&lcandidate); 
 #else 
     OWR_UNUSED(lcandidate);
     OWR_UNUSED(rcandidate);
