@@ -164,7 +164,7 @@ JNIEXPORT void JNICALL Java_com_ericsson_research_owr_sdk_JniHandlerTransportAge
 
 
 
-int callback_selected_local_candidate(OwrCandidateType aCandidateType)
+int callback_selected_local_candidate(NiceCandidateType aCandidateType)
 {
     jobject theObj;
     JNIEnv *env;
@@ -200,21 +200,20 @@ int callback_selected_local_candidate(OwrCandidateType aCandidateType)
 	}else
 		{
 
-
-        switch(aCandidateType){
-            case OWR_CANDIDATE_TYPE_HOST:
+          switch(aCandidateType){
+            case NICE_CANDIDATE_TYPE_HOST:
             theCandidateType = 0;
             break;
-            case OWR_CANDIDATE_TYPE_SERVER_REFLEXIVE:
+            case NICE_CANDIDATE_TYPE_SERVER_REFLEXIVE:
              theCandidateType = 1;
             break;
-            case OWR_CANDIDATE_TYPE_PEER_REFLEXIVE:
+            case NICE_CANDIDATE_TYPE_PEER_REFLEXIVE:
             theCandidateType = 2;
             break;
-            case OWR_CANDIDATE_TYPE_RELAY:
+            case NICE_CANDIDATE_TYPE_RELAYED:
              theCandidateType = 3;
             break;
-            default OWR_CANDIDATE_TYPE_HOST:
+            default NICE_CANDIDATE_TYPE_HOST:
              theCandidateType = 4;
             break;
         }
@@ -232,7 +231,7 @@ int callback_selected_local_candidate(OwrCandidateType aCandidateType)
 
 
 
-int callback_selected_remote_candidate(OwrCandidateType aCandidateType)
+int callback_selected_remote_candidate(NiceCandidateType aCandidateType)
 {
     jobject theObj;
     JNIEnv *env;
@@ -270,19 +269,19 @@ int callback_selected_remote_candidate(OwrCandidateType aCandidateType)
 
 
         switch(aCandidateType){
-            case OWR_CANDIDATE_TYPE_HOST:
+            case NICE_CANDIDATE_TYPE_HOST:
             theCandidateType = 0;
             break;
-            case OWR_CANDIDATE_TYPE_SERVER_REFLEXIVE:
+            case NICE_CANDIDATE_TYPE_SERVER_REFLEXIVE:
              theCandidateType = 1;
             break;
-            case OWR_CANDIDATE_TYPE_PEER_REFLEXIVE:
+            case NICE_CANDIDATE_TYPE_PEER_REFLEXIVE:
             theCandidateType = 2;
             break;
-            case OWR_CANDIDATE_TYPE_RELAY:
+            case NICE_CANDIDATE_TYPE_RELAYED:
              theCandidateType = 3;
             break;
-            default OWR_CANDIDATE_TYPE_HOST:
+            default NICE_CANDIDATE_TYPE_HOST:
              theCandidateType = 4;
             break;
         }
