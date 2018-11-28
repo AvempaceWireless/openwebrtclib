@@ -103,18 +103,18 @@ static const char *kTAG = "hello-jniCallback";
 #define UNUSED(x) (void)(x)
 
 // processing callback to handler class
-typedef struct tick_context {
-    JNIEnv  *javaEnv;
-    JavaVM  *javaVM;
-    jclass   jniHelperClz;
-    jobject  jniHelperObj;
-    jclass   mainActivityClz;
-    jobject  mainActivityObj;
-    pthread_mutex_t  lock;
-    int      done;
+typedef struct tick_context
+{
+    JNIEnv *javaEnv;
+    JavaVM *javaVM;
+    jclass jniHelperClz;
+    jobject jniHelperObj;
+    jclass mainActivityClz;
+    jobject mainActivityObj;
+    pthread_mutex_t lock;
+    int done;
 } TickContext;
 TickContext g_ctx;
-
 
 static JavaVM *jvm;
 /*
@@ -128,175 +128,175 @@ static JavaVM *jvm;
  *     we rely on system to free all global refs when it goes away;
  *     the pairing function JNI_OnUnload() never gets called at all.
  */
-JNIEXPORT void JNICALL Java_com_ericsson_research_owr_sdk_JniHandlerTransportAgent_initJniTransportAgent(JNIEnv *env, jobject jObj) {
-    
+JNIEXPORT void JNICALL Java_com_ericsson_research_owr_sdk_JniHandlerTransportAgent_initJniTransportAgent(JNIEnv *env, jobject jObj)
+{
+
     memset(&g_ctx, 0, sizeof(g_ctx));
-	LOGI("JniHandler_init - %s", "Abdelhamid : CALLING initJni");
+    LOGI("JniHandler_init - %s", "Abdelhamid : CALLING initJni");
     g_ctx.javaEnv = env;
-	LOGI("JniHandler_init - %s", "Abdelhamid : set env To javaEnv");
-	
+    LOGI("JniHandler_init - %s", "Abdelhamid : set env To javaEnv");
+
     jclass refClass = (*env)->FindClass(env, "com/ericsson/research/owr/sdk/JniHandler");
-	LOGI("JniHandler_init - %s", "Abdelhamid : Find Class JniHandler");
+    LOGI("JniHandler_init - %s", "Abdelhamid : Find Class JniHandler");
 
     int status = (*env)->GetJavaVM(env, &jvm);
-	
-	LOGI("JniHandler_init - %s", "Abdelhamid : GetJavaVM and save it to jvm");
-	if(!jObj)
-	{
-		LOGI("JniHandler_init - %s", "Abdelhamid : jObj null");	
-	}
 
-    g_ctx.jniHelperObj = (*env)->NewGlobalRef(env,jObj);
-	LOGI("JniHandler_init - %s", "Abdelhamid : Save jObj to jniHelperObj");
-	
-	g_ctx.jniHelperClz = (*env)->NewGlobalRef(env,refClass);
-	LOGI("JniHandler_init - %s", "Abdelhamid : Save refClass to jniHelperClz");
-	
-    if(status != 0) {
+    LOGI("JniHandler_init - %s", "Abdelhamid : GetJavaVM and save it to jvm");
+    if (!jObj)
+    {
+        LOGI("JniHandler_init - %s", "Abdelhamid : jObj null");
+    }
+
+    g_ctx.jniHelperObj = (*env)->NewGlobalRef(env, jObj);
+    LOGI("JniHandler_init - %s", "Abdelhamid : Save jObj to jniHelperObj");
+
+    g_ctx.jniHelperClz = (*env)->NewGlobalRef(env, refClass);
+    LOGI("JniHandler_init - %s", "Abdelhamid : Save refClass to jniHelperClz");
+
+    if (status != 0)
+    {
         // Fail!
-    LOGE("JniHandler_init FAIL GetJavaVM- %s", "CALLED");
+        LOGE("JniHandler_init FAIL GetJavaVM- %s", "CALLED");
     }
 
     LOGI("JniHandler_init SUCCESS - %s", "CALLED");
-	
 }
-
-
-
 
 int callback_selected_local_candidate(NiceCandidate *rcandidate)
 {
     jobject theObj;
     JNIEnv *env;
-	jclass  clz;
+    jclass clz;
     guint theCandidateType;
-	LOGI("-----> callback_selected_local_candidate - %s", "CALLED");
-	
-    (*jvm)->AttachCurrentThread(jvm,&env, NULL);
-	LOGI("----->callback_ice_failed - %s", "Abdelhamid AttachCurrentThread");
+    LOGI("-----> callback_selected_local_candidate - %s", "CALLED");
+
+    (*jvm)->AttachCurrentThread(jvm, &env, NULL);
+    LOGI("----->callback_ice_failed - %s", "Abdelhamid AttachCurrentThread");
     theObj = g_ctx.jniHelperObj;
-	LOGI("----->callback_ice_failed - %s", "Abdelhamid Get jniHelperObj");
-	
-	if(!theObj)
-	{
-		LOGE("----->callback_ice_failed - %s", "Abdelhamid Could not find Obj ");
-		return 1;
-	}
+    LOGI("----->callback_ice_failed - %s", "Abdelhamid Get jniHelperObj");
 
-	clz = g_ctx.jniHelperClz;
-	LOGI("----->callback_ice_failed - %s", "Abdelhamid Get jniHelperClz");
-	if(!clz)
-	{
-		LOGE("----->callback_ice_failed - %s", "Abdelhamid Could not find JniHandler Class ");
-		return 1;
-	}else{
-   
-    jmethodID statusId = (*env)->GetStaticMethodID(env, clz,"callbackSelectedLocalCandidate", "(I)V");
-	LOGI("----->callback_ice_failed - %s", "Abdelhamid GetStaticMethodID callbackSelectedLocalCandidate");
+    if (!theObj)
+    {
+        LOGE("----->callback_ice_failed - %s", "Abdelhamid Could not find Obj ");
+        return 1;
+    }
 
-    if(!statusId)
-	{
-		LOGE("----->callback_ice_failed - %s", "Abdelhamid Could not find Method callbackSelectedLocalCandidate ");
-	}else
-		{
+    clz = g_ctx.jniHelperClz;
+    LOGI("----->callback_ice_failed - %s", "Abdelhamid Get jniHelperClz");
+    if (!clz)
+    {
+        LOGE("----->callback_ice_failed - %s", "Abdelhamid Could not find JniHandler Class ");
+        return 1;
+    }
+    else
+    {
 
-          switch(&rcandidate->type){
-            case NICE_CANDIDATE_TYPE_HOST:
-            theCandidateType = 0;
-            break;
-            case NICE_CANDIDATE_TYPE_SERVER_REFLEXIVE:
-             theCandidateType = 1;
-            break;
-            case NICE_CANDIDATE_TYPE_PEER_REFLEXIVE:
-            theCandidateType = 2;
-            break;
-            case NICE_CANDIDATE_TYPE_RELAYED:
-             theCandidateType = 3;
-            break;
-            default:
-             theCandidateType = 4;
-            break;
+        jmethodID statusId = (*env)->GetStaticMethodID(env, clz, "callbackSelectedLocalCandidate", "(I)V");
+        LOGI("----->callback_ice_failed - %s", "Abdelhamid GetStaticMethodID callbackSelectedLocalCandidate");
+
+        if (!statusId)
+        {
+            LOGE("----->callback_ice_failed - %s", "Abdelhamid Could not find Method callbackSelectedLocalCandidate ");
         }
+        else
+        {
 
+            if (&rcandidate->type == NICE_CANDIDATE_TYPE_HOST)
+            {
+                theCandidateType = 0;
+            }
+            else if (&rcandidate->type == NICE_CANDIDATE_TYPE_SERVER_REFLEXIVE)
+            {
+                theCandidateType = 1;
+            }
+            else if (&rcandidate->type == NICE_CANDIDATE_TYPE_PEER_REFLEXIVE)
+            {
+                theCandidateType = 2;
+            }
+            else if (&rcandidate->type == NICE_CANDIDATE_TYPE_RELAYED)
+            {
+                theCandidateType = 3;
+            }
+            else
+            {
+                theCandidateType = 4;
+            }
 
-		(*env)->CallStaticVoidMethod(env, theObj, statusId, theCandidateType);
-		LOGI("----->callback_ice_failed - %s", "Abdelhamid CallStaticVoidMethod callbackSelectedLocalCandidate");
-		}
-	}
-
+            (*env)->CallStaticVoidMethod(env, theObj, statusId, theCandidateType);
+            LOGI("----->callback_ice_failed - %s", "Abdelhamid CallStaticVoidMethod callbackSelectedLocalCandidate");
+        }
+    }
 
     return 1;
-
 }
-
-
 
 int callback_selected_remote_candidate(NiceCandidate *lcandidate)
 {
     jobject theObj;
     JNIEnv *env;
-	jclass  clz;
+    jclass clz;
     guint theCandidateType;
-	LOGI("-----> callback_selected_remote_candidate - %s", "CALLED");
-	
-    (*jvm)->AttachCurrentThread(jvm,&env, NULL);
-	LOGI("----->callback_ice_failed - %s", "Abdelhamid AttachCurrentThread");
+    LOGI("-----> callback_selected_remote_candidate - %s", "CALLED");
+
+    (*jvm)->AttachCurrentThread(jvm, &env, NULL);
+    LOGI("----->callback_ice_failed - %s", "Abdelhamid AttachCurrentThread");
     theObj = g_ctx.jniHelperObj;
-	LOGI("----->callback_ice_failed - %s", "Abdelhamid Get jniHelperObj");
-	
-	if(!theObj)
-	{
-		LOGE("----->callback_ice_failed - %s", "Abdelhamid Could not find Obj ");
-		return 1;
-	}
+    LOGI("----->callback_ice_failed - %s", "Abdelhamid Get jniHelperObj");
 
-	clz = g_ctx.jniHelperClz;
-	LOGI("----->callback_ice_failed - %s", "Abdelhamid Get jniHelperClz");
-	if(!clz)
-	{
-		LOGE("----->callback_ice_failed - %s", "Abdelhamid Could not find JniHandler Class ");
-		return 1;
-	}else{
-   
-    jmethodID statusId = (*env)->GetStaticMethodID(env, clz,"callbackSelectedRemoteCandidate", "(I)V");
-	LOGI("----->callback_ice_failed - %s", "Abdelhamid GetStaticMethodID callbackSelectedRemoteCandidate");
+    if (!theObj)
+    {
+        LOGE("----->callback_ice_failed - %s", "Abdelhamid Could not find Obj ");
+        return 1;
+    }
 
-    if(!statusId)
-	{
-		LOGE("----->callback_ice_failed - %s", "Abdelhamid Could not find Method callbackSelectedRemoteCandidate ");
-	}else
-		{
+    clz = g_ctx.jniHelperClz;
+    LOGI("----->callback_ice_failed - %s", "Abdelhamid Get jniHelperClz");
+    if (!clz)
+    {
+        LOGE("----->callback_ice_failed - %s", "Abdelhamid Could not find JniHandler Class ");
+        return 1;
+    }
+    else
+    {
 
+        jmethodID statusId = (*env)->GetStaticMethodID(env, clz, "callbackSelectedRemoteCandidate", "(I)V");
+        LOGI("----->callback_ice_failed - %s", "Abdelhamid GetStaticMethodID callbackSelectedRemoteCandidate");
 
-        switch(&lcandidate->type){
-            case NICE_CANDIDATE_TYPE_HOST:
-            theCandidateType = 0;
-            break;
-            case NICE_CANDIDATE_TYPE_SERVER_REFLEXIVE:
-             theCandidateType = 1;
-            break;
-            case NICE_CANDIDATE_TYPE_PEER_REFLEXIVE:
-            theCandidateType = 2;
-            break;
-            case NICE_CANDIDATE_TYPE_RELAYED:
-             theCandidateType = 3;
-            break;
-            default:
-             theCandidateType = 4;
-            break;
+        if (!statusId)
+        {
+            LOGE("----->callback_ice_failed - %s", "Abdelhamid Could not find Method callbackSelectedRemoteCandidate ");
         }
+        else
+        {
 
+            if (&lcandidate->type == NICE_CANDIDATE_TYPE_HOST)
+            {
+                theCandidateType = 0;
+            }
+            else if (&lcandidate->type == NICE_CANDIDATE_TYPE_SERVER_REFLEXIVE)
+            {
+                theCandidateType = 1;
+            }
+            else if (&lcandidate->type == NICE_CANDIDATE_TYPE_PEER_REFLEXIVE)
+            {
+                theCandidateType = 2;
+            }
+            else if (&lcandidate->type == NICE_CANDIDATE_TYPE_RELAYED)
+            {
+                theCandidateType = 3;
+            }
+            else
+            {
+                theCandidateType = 4;
+            }
 
-		(*env)->CallStaticVoidMethod(env, theObj, statusId, theCandidateType);
-		LOGI("----->callback_ice_failed - %s", "Abdelhamid CallStaticVoidMethod callbackSelectedRemoteCandidate");
-		}
-	}
-
+            (*env)->CallStaticVoidMethod(env, theObj, statusId, theCandidateType);
+            LOGI("----->callback_ice_failed - %s", "Abdelhamid CallStaticVoidMethod callbackSelectedRemoteCandidate");
+        }
+    }
 
     return 1;
-
 }
-
 
 #endif
 
@@ -697,7 +697,8 @@ static void owr_transport_agent_init(OwrTransportAgent *transport_agent)
     if (isTcpDisabled)
     {
         g_object_set(G_OBJECT(priv->nice_agent), "ice-tcp", FALSE, NULL);
-    }else
+    }
+    else
     {
         g_object_set(G_OBJECT(priv->nice_agent), "ice-tcp", TRUE, NULL);
     }
@@ -710,7 +711,8 @@ static void owr_transport_agent_init(OwrTransportAgent *transport_agent)
     {
         g_object_set(G_OBJECT(priv->nice_agent), "force-relay", TRUE, NULL);
     }
-    else{
+    else
+    {
         g_object_set(G_OBJECT(priv->nice_agent), "force-relay", FALSE, NULL);
     }
 
@@ -2338,11 +2340,11 @@ static void on_new_selected_pair(NiceAgent *nice_agent,
     PendingSessionInfo *pending_session_info;
 
     OWR_UNUSED(nice_agent);
-   
+
 #ifdef __ANDROID__
-    callback_selected_remote_candidate(rcandidate); 
-    callback_selected_local_candidate(lcandidate); 
-#else 
+    callback_selected_remote_candidate(rcandidate);
+    callback_selected_local_candidate(lcandidate);
+#else
     OWR_UNUSED(lcandidate);
     OWR_UNUSED(rcandidate);
 #endif
