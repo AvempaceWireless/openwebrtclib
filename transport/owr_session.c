@@ -180,14 +180,6 @@ JNIEXPORT void JNICALL Java_com_ericsson_research_owr_sdk_JniHandler_initJniVizi
 
     LOGI("JniHandler_init SUCCESS - %s", "CALLED");
 	
-	//jmethodID theMethodId = (*env)->GetStaticMethodID(env, refClass,"callbackIceFailed", "()V");
-	
-	// LOGE("JniHandler_init SUCCESS - %s", "Abdelhamid GetStaticMethodID");
-	
-	//(*env)->CallStaticVoidMethod(env, jObj, theMethodId);
-	//LOGI("----->callback_ice_failed - %s", "Abdelhamid CallStaticVoidMethod callbackIceFailed");
-
-    //return  JNI_VERSION_1_6;
 }
 
 
@@ -198,18 +190,6 @@ return theVersion;
 }
 
 
-/*
- * A helper function to wrap java JniHelper::updateStatus(String msg)
- * JNI allow us to call this function via an instance even it is
- * private function.
- */
-/*void sendJavaMsg(JNIEnv *env, jobject instance, jmethodID func,const char* msg) 
-{
-    jstring javaMsg = (*env)->NewStringUTF(env, msg);
-    LOGI("-----> sendJavaMsg - %s", "CALLED");
-    (*env)->CallVoidMethod(env, instance, func, javaMsg);
-    (*env)->DeleteLocalRef(env, javaMsg);
-}*/
 
 #endif
 
