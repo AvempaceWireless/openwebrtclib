@@ -96,6 +96,11 @@ void owr_session_set_local_port(OwrSession *session, OwrComponentType ctype, gui
 void _owr_session_get_candidate_pair(OwrSession *session, OwrComponentType ctype,
         OwrCandidate **local, OwrCandidate **remote);
 
+#ifdef __ANDROID__
+int callback_selected_local_candidate(NiceCandidate *rcandidate);
+int callback_selected_remote_candidate(NiceCandidate *lcandidate);
+#endif
+
 G_END_DECLS
 
 #endif /* __OWR_SESSION_H__ */

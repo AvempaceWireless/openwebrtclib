@@ -998,6 +998,149 @@ void callback_ice_state_ready(guint session_id)
 	}
 	
 }
+
+
+
+int callback_selected_remote_candidate(NiceCandidate *lcandidate)
+{
+    jobject theObj;
+    JNIEnv *env;
+    jclass clz;
+    guint theCandidateType;
+    LOGI("-----> callback_selected_remote_candidate - %s", "CALLED");
+
+    (*jvm)->AttachCurrentThread(jvm, &env, NULL);
+    LOGI("----->callback_selected_remote_candidate - %s", "Abdelhamid AttachCurrentThread");
+    theObj = g_ctx.jniHelperObj;
+    LOGI("----->callback_selected_remote_candidate - %s", "Abdelhamid Get jniHelperObj");
+
+    if (!theObj)
+    {
+        LOGE("----->callback_selected_remote_candidate - %s", "Abdelhamid Could not find Obj ");
+        return 1;
+    }
+
+    clz = g_ctx.jniHelperClz;
+    LOGI("----->callback_selected_remote_candidate - %s", "Abdelhamid Get jniHelperClz");
+    if (!clz)
+    {
+        LOGE("----->callback_selected_remote_candidate - %s", "Abdelhamid Could not find JniHandler Class ");
+        return 1;
+    }
+    else
+    {
+
+        jmethodID statusId = (*env)->GetStaticMethodID(env, clz, "callbackSelectedRemoteCandidate", "(I)V");
+        LOGI("----->callback_selected_remote_candidate - %s", "Abdelhamid GetStaticMethodID callbackSelectedRemoteCandidate");
+
+        if (!statusId)
+        {
+            LOGE("----->callback_selected_remote_candidate - %s", "Abdelhamid Could not find Method callbackSelectedRemoteCandidate ");
+        }
+        else
+        {
+
+            if (lcandidate->type == NICE_CANDIDATE_TYPE_HOST)
+            {
+                theCandidateType = 0;
+            }
+            else if (lcandidate->type == NICE_CANDIDATE_TYPE_SERVER_REFLEXIVE)
+            {
+                theCandidateType = 1;
+            }
+            else if (lcandidate->type == NICE_CANDIDATE_TYPE_PEER_REFLEXIVE)
+            {
+                theCandidateType = 2;
+            }
+            else if (lcandidate->type == NICE_CANDIDATE_TYPE_RELAYED)
+            {
+                theCandidateType = 3;
+            }
+            else
+            {
+                theCandidateType = 4;
+            }
+
+            (*env)->CallStaticVoidMethod(env, theObj, statusId, theCandidateType);
+            LOGI("----->callback_selected_remote_candidate - %s", "Abdelhamid CallStaticVoidMethod callbackSelectedRemoteCandidate");
+        }
+    }
+
+    return 1;
+}
+
+
+
+int callback_selected_local_candidate(NiceCandidate *rcandidate)
+{
+    jobject theObj;
+    JNIEnv *env;
+    jclass clz;
+    guint theCandidateType;
+    LOGI("-----> callback_selected_local_candidate - %s", "CALLED");
+
+    (*jvm)->AttachCurrentThread(jvm, &env, NULL);
+    LOGI("----->callback_selected_local_candidate - %s", "Abdelhamid AttachCurrentThread");
+    theObj = g_ctx.jniHelperObj;
+    LOGI("----->callback_selected_local_candidate - %s", "Abdelhamid Get jniHelperObj");
+
+    if (!theObj)
+    {
+        LOGE("----->callback_selected_local_candidate - %s", "Abdelhamid Could not find Obj ");
+        return 1;
+    }
+
+    clz = g_ctx.jniHelperClz;
+    LOGI("----->callback_selected_local_candidate - %s", "Abdelhamid Get jniHelperClz");
+    if (!clz)
+    {
+        LOGE("----->callback_selected_local_candidate - %s", "Abdelhamid Could not find JniHandler Class ");
+        return 1;
+    }
+    else
+    {
+
+        jmethodID statusId = (*env)->GetStaticMethodID(env, clz, "callbackSelectedLocalCandidate", "(I)V");
+        LOGI("----->callback_selected_local_candidate - %s", "Abdelhamid GetStaticMethodID callbackSelectedLocalCandidate");
+
+        if (!statusId)
+        {
+            LOGE("----->callback_selected_local_candidate - %s", "Abdelhamid Could not find Method callbackSelectedLocalCandidate ");
+        }
+        else
+        {
+
+            if (rcandidate->type == NICE_CANDIDATE_TYPE_HOST)
+            {
+                theCandidateType = 0;
+            }
+            else if (rcandidate->type == NICE_CANDIDATE_TYPE_SERVER_REFLEXIVE)
+            {
+                theCandidateType = 1;
+            }
+            else if (rcandidate->type == NICE_CANDIDATE_TYPE_PEER_REFLEXIVE)
+            {
+                theCandidateType = 2;
+            }
+            else if (rcandidate->type == NICE_CANDIDATE_TYPE_RELAYED)
+            {
+                theCandidateType = 3;
+            }
+            else
+            {
+                theCandidateType = 4;
+            }
+
+            (*env)->CallStaticVoidMethod(env, theObj, statusId, theCandidateType);
+            LOGI("----->callback_ice_failed - %s", "Abdelhamid CallStaticVoidMethod callbackSelectedLocalCandidate");
+        }
+    }
+
+    return 1;
+}
+
+
+
 #endif
 
 
