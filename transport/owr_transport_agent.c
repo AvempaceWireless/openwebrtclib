@@ -2148,15 +2148,17 @@ static void on_new_selected_pair(NiceAgent *nice_agent,
 
     guint theRCandidateType;
     guint theLCandidateType;
- 
+    guint theStreamType;
 
-    GList *media_sessions;
+
+    theStreamType =0;
+    /*GList *media_sessions;
     GObject *media_session;
     gchar *media_type;
 
     media_sessions = g_object_get_data(G_OBJECT(transport_agent), "media-sessions");
     media_session = G_OBJECT(media_sessions->data);
-    media_type = g_object_get_data(media_session, "media-type");
+    media_type = g_object_get_data(media_session, "media-type");*/
 
     /*if (g_strcmp0(media_type, "audio"))
     {
@@ -2211,8 +2213,8 @@ static void on_new_selected_pair(NiceAgent *nice_agent,
         theLCandidateType = 4;
     }
 
-    callback_selected_remote_candidate(theRCandidateType, media_type);
-    callback_selected_local_candidate(theLCandidateType, media_type);
+    callback_selected_remote_candidate(theRCandidateType, theStreamType);
+    callback_selected_local_candidate(theLCandidateType, theStreamType);
 #else
     OWR_UNUSED(lcandidate);
     OWR_UNUSED(rcandidate);

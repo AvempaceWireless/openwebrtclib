@@ -1001,7 +1001,7 @@ void callback_ice_state_ready(guint session_id)
 
 
 
-int callback_selected_remote_candidate(guint theCandidateType, gchar *aStreamType)
+int callback_selected_remote_candidate(guint theCandidateType, guint aStreamType)
 {
     jobject theObj;
     JNIEnv *env;
@@ -1029,8 +1029,8 @@ int callback_selected_remote_candidate(guint theCandidateType, gchar *aStreamTyp
     }
     else
     {
-        jstring theStreamTypeString = (*env)->NewStringUTF(env, aStreamType);
-        jmethodID statusId = (*env)->GetStaticMethodID(env, clz, "callbackSelectedRemoteCandidate", "(Ljava/lang/String;I)V");
+        //jstring theStreamTypeString = (*env)->NewStringUTF(env, aStreamType);
+        jmethodID statusId = (*env)->GetStaticMethodID(env, clz, "callbackSelectedRemoteCandidate", "(II)V");
         LOGI("----->callback_selected_remote_candidate - %s", "Abdelhamid GetStaticMethodID callbackSelectedRemoteCandidate");
 
         if (!statusId)
@@ -1040,7 +1040,7 @@ int callback_selected_remote_candidate(guint theCandidateType, gchar *aStreamTyp
         else
         {
 
-            (*env)->CallStaticVoidMethod(env, theObj, statusId, theStreamTypeString,theCandidateType);
+            (*env)->CallStaticVoidMethod(env, theObj, statusId, theCandidateType, aStreamType);
             LOGI("----->callback_selected_remote_candidate - %s", "Abdelhamid CallStaticVoidMethod callbackSelectedRemoteCandidate");
         }
     }
@@ -1050,7 +1050,7 @@ int callback_selected_remote_candidate(guint theCandidateType, gchar *aStreamTyp
 
 
 
-int callback_selected_local_candidate(guint theCandidateType,  gchar *aStreamType)
+int callback_selected_local_candidate(guint theCandidateType, guint aStreamType)
 {
     jobject theObj;
     JNIEnv *env;
@@ -1078,8 +1078,8 @@ int callback_selected_local_candidate(guint theCandidateType,  gchar *aStreamTyp
     }
     else
     {
-        jstring theStreamTypeString = (*env)->NewStringUTF(env, aStreamType);
-        jmethodID statusId = (*env)->GetStaticMethodID(env, clz, "callbackSelectedLocalCandidate", "(Ljava/lang/String;I)V");
+        //jstring theStreamTypeString = (*env)->NewStringUTF(env, aStreamType);
+        jmethodID statusId = (*env)->GetStaticMethodID(env, clz, "callbackSelectedLocalCandidate", "(II)V");
         LOGI("----->callback_selected_local_candidate - %s", "Abdelhamid GetStaticMethodID callbackSelectedLocalCandidate");
 
         if (!statusId)
@@ -1089,7 +1089,7 @@ int callback_selected_local_candidate(guint theCandidateType,  gchar *aStreamTyp
         else
         {
 
-            (*env)->CallStaticVoidMethod(env, theObj, statusId, theStreamTypeString, theCandidateType);
+            (*env)->CallStaticVoidMethod(env, theObj, statusId, theCandidateType, aStreamType);
             LOGI("----->callback_ice_failed - %s", "Abdelhamid CallStaticVoidMethod callbackSelectedLocalCandidate");
         }
     }
