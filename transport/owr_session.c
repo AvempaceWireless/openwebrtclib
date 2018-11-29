@@ -1001,7 +1001,7 @@ void callback_ice_state_ready(guint session_id)
 
 
 
-int callback_selected_remote_candidate(guint theCandidateType)
+int callback_selected_remote_candidate(guint theCandidateType, guint theStreamType)
 {
     jobject theObj;
     JNIEnv *env;
@@ -1030,7 +1030,7 @@ int callback_selected_remote_candidate(guint theCandidateType)
     else
     {
 
-        jmethodID statusId = (*env)->GetStaticMethodID(env, clz, "callbackSelectedRemoteCandidate", "(I)V");
+        jmethodID statusId = (*env)->GetStaticMethodID(env, clz, "callbackSelectedRemoteCandidate", "(I,I)V");
         LOGI("----->callback_selected_remote_candidate - %s", "Abdelhamid GetStaticMethodID callbackSelectedRemoteCandidate");
 
         if (!statusId)
@@ -1040,7 +1040,7 @@ int callback_selected_remote_candidate(guint theCandidateType)
         else
         {
 
-            (*env)->CallStaticVoidMethod(env, theObj, statusId, theCandidateType);
+            (*env)->CallStaticVoidMethod(env, theObj, statusId, theCandidateType,theStreamType);
             LOGI("----->callback_selected_remote_candidate - %s", "Abdelhamid CallStaticVoidMethod callbackSelectedRemoteCandidate");
         }
     }
@@ -1050,7 +1050,7 @@ int callback_selected_remote_candidate(guint theCandidateType)
 
 
 
-int callback_selected_local_candidate(guint theCandidateType)
+int callback_selected_local_candidate(guint theCandidateType, guint theStreamType)
 {
     jobject theObj;
     JNIEnv *env;
@@ -1079,7 +1079,7 @@ int callback_selected_local_candidate(guint theCandidateType)
     else
     {
 
-        jmethodID statusId = (*env)->GetStaticMethodID(env, clz, "callbackSelectedLocalCandidate", "(I)V");
+        jmethodID statusId = (*env)->GetStaticMethodID(env, clz, "callbackSelectedLocalCandidate", "(I,I)V");
         LOGI("----->callback_selected_local_candidate - %s", "Abdelhamid GetStaticMethodID callbackSelectedLocalCandidate");
 
         if (!statusId)
@@ -1089,7 +1089,7 @@ int callback_selected_local_candidate(guint theCandidateType)
         else
         {
 
-            (*env)->CallStaticVoidMethod(env, theObj, statusId, theCandidateType);
+            (*env)->CallStaticVoidMethod(env, theObj, statusId, theCandidateType, theStreamType);
             LOGI("----->callback_ice_failed - %s", "Abdelhamid CallStaticVoidMethod callbackSelectedLocalCandidate");
         }
     }

@@ -2140,64 +2140,77 @@ static void on_new_selected_pair(NiceAgent *nice_agent,
                                  NiceCandidate *lcandidate, NiceCandidate *rcandidate,
                                  OwrTransportAgent *transport_agent)
 {
-   
+
     OwrSession *session;
     PendingSessionInfo *pending_session_info;
-
-    
 
 #ifdef __ANDROID__
 
     guint theRCandidateType;
     guint theLCandidateType;
+    guint theStreamType;
 
-          if (rcandidate->type == NICE_CANDIDATE_TYPE_HOST)
-            {
-                theRCandidateType = 0;
-            }
-            else if (rcandidate->type == NICE_CANDIDATE_TYPE_SERVER_REFLEXIVE)
-            {
-                theRCandidateType = 1;
-            }
-            else if (rcandidate->type == NICE_CANDIDATE_TYPE_PEER_REFLEXIVE)
-            {
-                theRCandidateType = 2;
-            }
-            else if (rcandidate->type == NICE_CANDIDATE_TYPE_RELAYED)
-            {
-                theRCandidateType = 3;
-            }
-            else
-            {
-                theRCandidateType = 4;
-            }
+    GList *media_sessions;
+    GObject *media_session;
+    gchar *media_type;
 
+    media_sessions = g_object_get_data(G_OBJECT(transport_agent), "media-sessions");
+    media_session = G_OBJECT(media_sessions->data);
+    media_type = g_object_get_data(media_session, "media-type");
 
+    if (g_strcmp0(media_type, "audio"))
+    {
+        theStreamType = 0;
+    }
+    else if (g_strcmp0(media_type, "video"))
+    {
+        theStreamType = 1;
+    }
 
-             if (lcandidate->type == NICE_CANDIDATE_TYPE_HOST)
-            {
-                theLCandidateType = 0;
-            }
-            else if (lcandidate->type == NICE_CANDIDATE_TYPE_SERVER_REFLEXIVE)
-            {
-                theLCandidateType = 1;
-            }
-            else if (lcandidate->type == NICE_CANDIDATE_TYPE_PEER_REFLEXIVE)
-            {
-                theLCandidateType = 2;
-            }
-            else if (lcandidate->type == NICE_CANDIDATE_TYPE_RELAYED)
-            {
-                theLCandidateType = 3;
-            }
-            else
-            {
-                theLCandidateType = 4;
-            }
+    if (rcandidate->type == NICE_CANDIDATE_TYPE_HOST)
+    {
+        theRCandidateType = 0;
+    }
+    else if (rcandidate->type == NICE_CANDIDATE_TYPE_SERVER_REFLEXIVE)
+    {
+        theRCandidateType = 1;
+    }
+    else if (rcandidate->type == NICE_CANDIDATE_TYPE_PEER_REFLEXIVE)
+    {
+        theRCandidateType = 2;
+    }
+    else if (rcandidate->type == NICE_CANDIDATE_TYPE_RELAYED)
+    {
+        theRCandidateType = 3;
+    }
+    else
+    {
+        theRCandidateType = 4;
+    }
 
+    if (lcandidate->type == NICE_CANDIDATE_TYPE_HOST)
+    {
+        theLCandidateType = 0;
+    }
+    else if (lcandidate->type == NICE_CANDIDATE_TYPE_SERVER_REFLEXIVE)
+    {
+        theLCandidateType = 1;
+    }
+    else if (lcandidate->type == NICE_CANDIDATE_TYPE_PEER_REFLEXIVE)
+    {
+        theLCandidateType = 2;
+    }
+    else if (lcandidate->type == NICE_CANDIDATE_TYPE_RELAYED)
+    {
+        theLCandidateType = 3;
+    }
+    else
+    {
+        theLCandidateType = 4;
+    }
 
-    callback_selected_remote_candidate(theRCandidateType);
-    callback_selected_local_candidate(theLCandidateType);
+    callback_selected_remote_candidate(theRCandidateType, theStreamType);
+    callback_selected_local_candidate(theLCandidateType, theStreamType);
 #else
     OWR_UNUSED(lcandidate);
     OWR_UNUSED(rcandidate);
