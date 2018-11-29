@@ -2148,7 +2148,7 @@ static void on_new_selected_pair(NiceAgent *nice_agent,
 
     guint theRCandidateType;
     guint theLCandidateType;
-    guint theStreamType;
+ 
 
     GList *media_sessions;
     GObject *media_session;
@@ -2158,7 +2158,7 @@ static void on_new_selected_pair(NiceAgent *nice_agent,
     media_session = G_OBJECT(media_sessions->data);
     media_type = g_object_get_data(media_session, "media-type");
 
-    if (g_strcmp0(media_type, "audio"))
+    /*if (g_strcmp0(media_type, "audio"))
     {
         theStreamType = 0;
     }
@@ -2167,7 +2167,7 @@ static void on_new_selected_pair(NiceAgent *nice_agent,
         theStreamType = 1;
     }else {
       theStreamType = 2;  
-    }
+    }*/
 
     if (rcandidate->type == NICE_CANDIDATE_TYPE_HOST)
     {
@@ -2211,8 +2211,8 @@ static void on_new_selected_pair(NiceAgent *nice_agent,
         theLCandidateType = 4;
     }
 
-    callback_selected_remote_candidate(theRCandidateType, theStreamType);
-    callback_selected_local_candidate(theLCandidateType, theStreamType);
+    callback_selected_remote_candidate(theRCandidateType, media_type);
+    callback_selected_local_candidate(theLCandidateType, media_type);
 #else
     OWR_UNUSED(lcandidate);
     OWR_UNUSED(rcandidate);
