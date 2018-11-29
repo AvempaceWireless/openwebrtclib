@@ -2165,6 +2165,8 @@ static void on_new_selected_pair(NiceAgent *nice_agent,
     else if (g_strcmp0(media_type, "video"))
     {
         theStreamType = 1;
+    }else {
+      theStreamType = 2;  
     }
 
     if (rcandidate->type == NICE_CANDIDATE_TYPE_HOST)
