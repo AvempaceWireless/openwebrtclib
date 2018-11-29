@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "owr_transport_agent.h": "c"
+        "owr_transport_agent.h": "c",
+        "owr_candidate_private.h": "c"
     }
 }

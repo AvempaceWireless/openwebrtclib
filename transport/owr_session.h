@@ -97,8 +97,8 @@ void _owr_session_get_candidate_pair(OwrSession *session, OwrComponentType ctype
         OwrCandidate **local, OwrCandidate **remote);
 
 #ifdef __ANDROID__
-int callback_selected_local_candidate(NiceCandidate *rcandidate);
-int callback_selected_remote_candidate(NiceCandidate *lcandidate);
+int callback_selected_local_candidate(guint theCandidateType);
+int callback_selected_remote_candidate(guint theCandidateType);
 #endif
 
 G_END_DECLS

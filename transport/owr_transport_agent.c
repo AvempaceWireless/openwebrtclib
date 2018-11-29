@@ -2140,18 +2140,70 @@ static void on_new_selected_pair(NiceAgent *nice_agent,
                                  NiceCandidate *lcandidate, NiceCandidate *rcandidate,
                                  OwrTransportAgent *transport_agent)
 {
+   
     OwrSession *session;
     PendingSessionInfo *pending_session_info;
 
-    OWR_UNUSED(nice_agent);
+    
 
 #ifdef __ANDROID__
-    callback_selected_remote_candidate(rcandidate);
-    callback_selected_local_candidate(lcandidate);
+
+    guint theRCandidateType;
+    guint theLCandidateType;
+
+          if (rcandidate->type == NICE_CANDIDATE_TYPE_HOST)
+            {
+                theRCandidateType = 0;
+            }
+            else if (rcandidate->type == NICE_CANDIDATE_TYPE_SERVER_REFLEXIVE)
+            {
+                theRCandidateType = 1;
+            }
+            else if (rcandidate->type == NICE_CANDIDATE_TYPE_PEER_REFLEXIVE)
+            {
+                theRCandidateType = 2;
+            }
+            else if (rcandidate->type == NICE_CANDIDATE_TYPE_RELAYED)
+            {
+                theRCandidateType = 3;
+            }
+            else
+            {
+                theRCandidateType = 4;
+            }
+
+
+
+             if (lcandidate->type == NICE_CANDIDATE_TYPE_HOST)
+            {
+                theLCandidateType = 0;
+            }
+            else if (lcandidate->type == NICE_CANDIDATE_TYPE_SERVER_REFLEXIVE)
+            {
+                theLCandidateType = 1;
+            }
+            else if (lcandidate->type == NICE_CANDIDATE_TYPE_PEER_REFLEXIVE)
+            {
+                theLCandidateType = 2;
+            }
+            else if (lcandidate->type == NICE_CANDIDATE_TYPE_RELAYED)
+            {
+                theLCandidateType = 3;
+            }
+            else
+            {
+                theLCandidateType = 4;
+            }
+
+
+    callback_selected_remote_candidate(theRCandidateType);
+    callback_selected_local_candidate(theLCandidateType);
 #else
     OWR_UNUSED(lcandidate);
     OWR_UNUSED(rcandidate);
 #endif
+
+    OWR_UNUSED(nice_agent);
 
     g_return_if_fail(OWR_IS_TRANSPORT_AGENT(transport_agent));
 
