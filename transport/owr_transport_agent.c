@@ -136,8 +136,8 @@ JNIEXPORT void JNICALL Java_com_ericsson_research_owr_sdk_JniHandlerTransportAge
     g_ctx.javaEnv = env;
     LOGI("JniHandler_init - %s", "Abdelhamid : set env To javaEnv");
 
-    jclass refClass = (*env)->FindClass(env, "com/ericsson/research/owr/sdk/JniHandler");
-    LOGI("JniHandler_init - %s", "Abdelhamid : Find Class JniHandler");
+    jclass refClass = (*env)->FindClass(env, "com/ericsson/research/owr/sdk/JniHandlerTransportAgent");
+    LOGI("JniHandler_init - %s", "Abdelhamid : Find Class JniHandlerTransportAgent");
 
     int status = (*env)->GetJavaVM(env, &jvm);
 
