@@ -1030,7 +1030,7 @@ int callback_selected_remote_candidate(guint theCandidateType, guint theStreamTy
     else
     {
 
-        jmethodID statusId = (*env)->GetStaticMethodID(env, clz, "callbackSelectedRemoteCandidate", "(I,I)V");
+        jmethodID statusId = (*env)->GetStaticMethodID(env, clz, "callbackSelectedRemoteCandidate", "(II)V");
         LOGI("----->callback_selected_remote_candidate - %s", "Abdelhamid GetStaticMethodID callbackSelectedRemoteCandidate");
 
         if (!statusId)
@@ -1079,7 +1079,7 @@ int callback_selected_local_candidate(guint theCandidateType, guint theStreamTyp
     else
     {
 
-        jmethodID statusId = (*env)->GetStaticMethodID(env, clz, "callbackSelectedLocalCandidate", "(I,I)V");
+        jmethodID statusId = (*env)->GetStaticMethodID(env, clz, "callbackSelectedLocalCandidate", "(II)V");
         LOGI("----->callback_selected_local_candidate - %s", "Abdelhamid GetStaticMethodID callbackSelectedLocalCandidate");
 
         if (!statusId)
