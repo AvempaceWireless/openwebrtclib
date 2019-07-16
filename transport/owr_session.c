@@ -113,7 +113,7 @@ enum {
 
 // Android log function wrappers
 #ifdef __ANDROID__
-guint theVersion = 3;
+guint theVersion = 4;
 static const char* kTAG = "hello-jniCallback";
 #define LOGI(...) \
   ((void)__android_log_print(ANDROID_LOG_INFO, kTAG, __VA_ARGS__))
