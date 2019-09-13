@@ -412,26 +412,27 @@ static void on_caps(GstElement *source, GParamSpec *pspec, OwrMediaSource *media
     }
 }
 
-static void
-setup_source_for_aec(GstElement *src)
-{
-#if defined(__linux__) && !defined(__ANDROID__)
+
+//static void setup_source_for_aec(GstElement *src)
+//{
+//#if defined(__linux__) && !defined(__ANDROID__)
     /* pulsesrc */
-    GstStructure *s;
+ //   GstStructure *s;
 
-    s = gst_structure_new("props", PA_PROP_FILTER_WANT, G_TYPE_STRING, "echo-cancel", NULL);
-    g_object_set(G_OBJECT(src), "stream-properties", s, NULL);
-    gst_structure_free(s);
+//    s = gst_structure_new("props", PA_PROP_FILTER_WANT, G_TYPE_STRING, "echo-cancel", NULL);
+ //   g_object_set(G_OBJECT(src), "stream-properties", s, NULL);
+ //   gst_structure_free(s);
 
-#elif defined(__ANDROID__)
+//#elif defined(__ANDROID__)
     /* openslessrc */
-   // g_object_set(G_OBJECT(src), "preset", 4 /* voice-communication */, NULL);
+//    g_object_set(G_OBJECT(src), "preset", 4 /* voice-communication */, NULL);
 
-#elif defined(__APPLE__) && !TARGET_IPHONE_SIMULATOR
+//#elif defined(__APPLE__) && !TARGET_IPHONE_SIMULATOR
     /* osxaudiosrc */
 
-#endif
-}
+//#endif
+//}
+
 
 /*
  * owr_local_media_source_get_pad
@@ -565,7 +566,7 @@ static GstElement *owr_local_media_source_request_source(OwrMediaSource *media_s
 #endif
                 }
 #endif
-                setup_source_for_aec(source);
+              //  setup_source_for_aec(source);
                 break;
             case OWR_SOURCE_TYPE_TEST:
                 CREATE_ELEMENT(source, "audiotestsrc", "audio-source");
