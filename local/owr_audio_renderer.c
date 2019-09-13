@@ -134,7 +134,7 @@ setup_sink_for_aec(GstElement *sink)
 
 #elif defined(__ANDROID__)
     /* openslessink */
-    g_object_set(G_OBJECT(sink), "stream-type", 0 /* voice */, NULL);
+   // g_object_set(G_OBJECT(sink), "stream-type", 0 /* voice */, NULL);
 
 #elif defined(__APPLE__) && !TARGET_IPHONE_SIMULATOR
     /* osxaudiosink */
@@ -177,11 +177,13 @@ static GstElement *owr_audio_renderer_get_element(OwrMediaRenderer *renderer)
 
 
 
-    g_object_set(sink, "buffer-time", G_GINT64_CONSTANT(200000),
+   /* g_object_set(sink, "buffer-time", G_GINT64_CONSTANT(200000),
         "latency-time", G_GINT64_CONSTANT(20000), NULL);
-   GST_ERROR_OBJECT(sink, "ABDELHAMID SETUP BUFFER TIME TO 200ms and Latency time to 20ms for Sink");
-   /* g_object_set(sink, "buffer-time", SINK_BUFFER_TIME,
-        "latency-time", G_GINT64_CONSTANT(10000), NULL);*/
+   GST_ERROR_OBJECT(sink, "ABDELHAMID SETUP BUFFER TIME TO 200ms and Latency time to 20ms for Sink");*/
+   
+    g_object_set(sink, "buffer-time", SINK_BUFFER_TIME,
+        "latency-time", G_GINT64_CONSTANT(10000), NULL);
+    GST_ERROR_OBJECT(sink, "ABDELHAMID SETUP BUFFER TIME TO 20ms and Latency time to 10ms for Sink");
 
     setup_sink_for_aec(sink);
 
